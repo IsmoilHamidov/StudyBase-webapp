@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Brand palette */
+  --color-navy-950: #0d1117;
+  --color-navy-900: #161b27;
+  --color-navy-800: #1e2535;
+  --color-navy-700: #2a3347;
+  --color-navy-600: #374257;
+  --color-navy-100: #e8ecf4;
+  --color-navy-50:  #f2f4f9;
+
+  --color-amber-500: #f59e0b;
+  --color-amber-400: #fbbf24;
+  --color-amber-100: #fef3c7;
+
+  --color-slate-400: #94a3b8;
+  --color-slate-300: #cbd5e1;
+  --color-slate-200: #e2e8f0;
+  --color-slate-100: #f1f5f9;
+  --color-slate-50:  #f8fafc;
+
+  --color-emerald-500: #10b981;
+  --color-emerald-100: #d1fae5;
+  --color-red-500:     #ef4444;
+  --color-red-100:     #fee2e2;
+
+  --color-brand:        var(--color-navy-900);
+  --color-brand-light:  var(--color-navy-100);
+  --color-accent:       var(--color-amber-500);
+  --color-accent-light: var(--color-amber-100);
+  --color-surface:      #ffffff;
+  --color-bg:           var(--color-navy-50);
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --radius-card: 12px;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow-card-hover: 0 4px 12px 0 rgb(0 0 0 / 0.10);
+}
+
+
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-navy-900);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--color-slate-300); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-slate-400); }
