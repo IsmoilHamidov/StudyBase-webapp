@@ -101,7 +101,7 @@ export default function QuizPanel({
         <button
           onClick={loading ? undefined : questions.length > 0 ? handleReset : onGenerate}
           disabled={loading}
-          className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           {loading ? (
             <>
@@ -124,8 +124,8 @@ export default function QuizPanel({
 
       {/* Empty / prompt state */}
       {!loading && questions.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/40 p-8 text-center">
-          <BadgeQuestionMark size={36} className="mx-auto mb-3 text-emerald-400" />
+        <div className="rounded-2xl border border-dashed border-emerald-200 bg-sky-50 p-8 text-center">
+          <BadgeQuestionMark size={36} className="mx-auto mb-3 text-sky-700" />
           <p className="font-semibold text-gray-700">No quiz yet</p>
           <p className="mt-1 text-sm text-gray-500">
             Click &quot;Generate Quiz&quot; to get 4 multiple-choice questions based on this content.
@@ -139,7 +139,7 @@ export default function QuizPanel({
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="animate-pulse rounded-2xl border border-gray-200 bg-white/60 p-5"
+              className="animate-pulse rounded-2xl border border-gray-200 bg-white/40 p-5"
             >
               <div className="mb-4 h-4 w-3/4 rounded bg-gray-200" />
               <div className="grid grid-cols-2 gap-3">
@@ -157,7 +157,7 @@ export default function QuizPanel({
         <div
           className={`mb-6 flex items-center gap-3 rounded-2xl border p-4 ${
             score === questions.length
-              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+              ? "border-emerald-200 bg-emerald-50 text-slate-800"
               : score >= questions.length / 2
               ? "border-yellow-200 bg-yellow-50 text-yellow-800"
               : "border-red-200 bg-red-50 text-red-800"
@@ -185,10 +185,10 @@ export default function QuizPanel({
             return (
               <article
                 key={qi}
-                className="rounded-2xl border border-gray-200 bg-white/60 p-5"
+                className="rounded-2xl border border-gray-200 bg-white/40 p-5"
               >
-                <p className="mb-4 font-semibold text-gray-900 leading-7">
-                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">
+                <p className="mb-4 font-semibold text-slate-900 leading-7">
+                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-700">
                     {qi + 1}
                   </span>
                   {q.question}
@@ -201,15 +201,15 @@ export default function QuizPanel({
                     const isCorrect = letter === q.correct;
 
                     let optionClass =
-                      "flex items-center gap-3 rounded-xl border px-4 py-3 text-sm transition cursor-pointer text-left";
+                      "flex items-center gap-3 rounded-xl border px-4 py-3 text-md transition cursor-pointer text-left";
 
                     if (!isRevealed) {
                       optionClass += isSelected
-                        ? " border-emerald-400 bg-emerald-50 font-medium text-emerald-800"
-                        : " border-gray-200 bg-white/80 hover:bg-gray-50 text-gray-700";
+                        ? " border-sky-400 bg-sky-50 font-medium ext-gray-900"
+                        : " border-gray-200 bg-white/80 hover:bg-gray-50 text-gray-900";
                     } else {
                       if (isCorrect) {
-                        optionClass += " border-emerald-400 bg-emerald-50 font-medium text-emerald-800";
+                        optionClass += " border-emerald-400 bg-emerald-50 font-medium text-gray-900";
                       } else if (isSelected && !isCorrect) {
                         optionClass += " border-red-300 bg-red-50 text-red-700";
                       } else {
@@ -224,7 +224,7 @@ export default function QuizPanel({
                         onClick={() => handleSelect(qi, letter)}
                         disabled={isRevealed}
                       >
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-600">
+                        <span className="flex  h-7 w-7 shrink-0 items-center justify-center rounded-full bg--50 border text-sm font-medium text-gray-600">
                           {letter}
                         </span>
                         <span className="flex-1">{q.options[letter]}</span>
@@ -242,7 +242,7 @@ export default function QuizPanel({
                 {/* Check / Result button */}
                 <div className="mt-3 flex items-center justify-end gap-3">
                   {state?.revealed ? (
-                    <p className={`text-sm font-semibold ${state.selected === q.correct ? "text-emerald-700" : "text-red-600"}`}>
+                    <p className={`text-sm font-semibold ${state.selected === q.correct ? "text-emerald-800" : "text-red-600"}`}>
                       {state.selected === q.correct
                         ? "✓ Correct!"
                         : `✗ Correct answer: ${q.correct}`}
