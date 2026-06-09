@@ -42,7 +42,7 @@ export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
       <form onSubmit={handleRegister} className="w-full max-w-md rounded-2xl bg-white/10 p-8">
-        <h1 className="text-2xl font-bold">Register an account</h1>
+        <h1 className="text-2xl font-bold">Ro'yxatdan o'tish</h1>
 
         <input
           className="mt-6 w-full rounded-xl px-4 py-3 border border-white/20"
@@ -53,14 +53,14 @@ export default function RegisterPage() {
 
         <input
           className="mt-4 w-full rounded-xl px-4 py-3 text-white border border-white/20"
-          placeholder="Password"
+          placeholder="Parol"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <button className="mt-7 w-full rounded-xl bg-sky-700  py-3 font-semibold cursor-pointer">
-          Register
+            Ro'yxatdan o'tish
         </button>
 
         <button
@@ -75,11 +75,11 @@ export default function RegisterPage() {
                 width={20}
                 height={20}
               />
-            <span> Continue with Google</span>
+            <span> Google orqali davom ettirish</span>
           </button>
 
         <p className="mt-6 text-sm text-slate-300">
-          Already have account? <Link href="/login" className="text-blue-400 ms-1">Login</Link>
+           Hisobingiz bormi? Tizimga kiring <Link href="/login" className="text-blue-400 ms-1">Login</Link>
         </p>
       </form>
     </main>

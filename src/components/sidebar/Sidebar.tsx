@@ -11,7 +11,7 @@ export default function Sidebar({
   return (
     <aside className="w-72 border-r bg-white p-4">
       <h2 className="mb-6 text-xl font-bold text-black">
-        Topics
+        Mavzular
       </h2>
 
       <div className="space-y-2">

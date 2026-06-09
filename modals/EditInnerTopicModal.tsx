@@ -27,7 +27,7 @@ export default function EditInnerTopicModal({
     <div className="fixed inset-0 flex items-center justify-center bg-black/50">
       <div className="w-[400px] rounded-xl bg-white p-4">
         <h2 className="mb-4 text-lg font-semibold">
-          Edit Inner Topic
+            Ichki mavzuni tahrirlash
         </h2>
 
         <input
@@ -41,7 +41,7 @@ export default function EditInnerTopicModal({
             onClick={onClose}
             className="rounded bg-gray-300 px-4 py-2"
           >
-            Cancel
+            Bekor qilish
           </button>
 
           <button
@@ -51,7 +51,7 @@ export default function EditInnerTopicModal({
             }}
             className="rounded bg-sky-700 px-4 py-2 text-white cursor-pointer"
           >
-            Save
+            Saqlash
           </button>
         </div>
       </div>

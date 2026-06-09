@@ -36,25 +36,25 @@ export default function AddInnerTopicModal({
         onSubmit={handleSubmit}
         className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
       >
-        <h2 className="text-2xl font-bold">Add Inner Topic</h2>
+        <h2 className="text-2xl font-bold">Ichki mavzu qoʻshish</h2>
 
         <input
           className="mt-6 w-full rounded-xl border px-4 py-3"
-          placeholder="Example: Python Introduction"
+          placeholder="Masalan: React.js kirish qismi"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <div className="mt-6 flex justify-end gap-3">
           <button type="button" onClick={onClose} className="rounded-xl border px-4 py-2">
-            Cancel
+            Bekor qilish
           </button>
 
           <button
             disabled={saving}
             className="rounded-xl bg-sky-700  px-4 py-2 font-semibold text-white"
           >
-            {saving ? "Saving..." : "Save Inner Topic"}
+            {saving ? "Saqlanmoqda..." : "Ichki mavzuni saqlash"}
           </button>
         </div>
       </form>

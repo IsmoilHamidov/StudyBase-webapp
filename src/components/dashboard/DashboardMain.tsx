@@ -31,7 +31,7 @@ export default function DashboardMain() {
     <AuthGuard>
       {dashboard.loading ? (
         <main className="flex min-h-screen text-2xl items-center justify-center bg-gray-100">
-          Loading... 
+          Yuklanmoqda...
         </main>
       ) : (
         <DashboardLayout
@@ -46,7 +46,7 @@ export default function DashboardMain() {
           }
         >
         <DashboardHeader
-          title={dashboard.selectedTopic?.title ?? "No topic selected"}
+          title={dashboard.selectedTopic?.title ?? "Mavzu tanlanmagan"}
           description={dashboard.selectedTopic?.description}
           onAddTopic={() => dashboard.setShowAddTopicModal(true)}
           onEditTopic={() => dashboard.setShowEditTopicModal(true)}
@@ -66,106 +66,81 @@ export default function DashboardMain() {
               dashboard.explanations.length
             }
           />
-      <div className="relative  mb-12">
-          <div className="h-4 border-b-2 border-gray-300 rounded-full"></div>
-        </div>
-      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <section className="rounded-xl border border-gray-200 bg-white/40 p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <h3 className="text-sm font-semibold uppercase tracking-widest text-slate-700">
-                  Lessons
-                </h3>
+          <div className="relative  mb-12">
+            <div className="h-4 border-b-2 border-gray-300 rounded-full"></div>
+          </div>
+        <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+              <section className="rounded-xl border border-gray-200 bg-white/40 p-4 sm:p-5 shadow-sm">
+                {/* Header section adapted to stack on mobile */}
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                  <h3 className="text-sm font-semibold uppercase tracking-widest text-slate-700">
+                    Modullar
+                  </h3>
 
-                <div className="flex gap-2">
-                  <button
-                    disabled={
-                      !dashboard.selectedInnerTopic
-                    }
-                    onClick={
-                      dashboard.handleDeleteInnerTopic
-                    }
-                    className="flex items-center rounded-lg bg-red-50 border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                      Delete <Trash2 className="ms-2" size={15} />
-                  </button>
-                    
-                  <button
-                    disabled={!dashboard.selectedInnerTopic}
-                    onClick={() =>
-                      dashboard.setShowEditInnerTopicModal(true)
-                    }
-                    className="flex items-center gap-1 rounded-lg bg-violet-50 border border-violet-200 px-3 py-1.5 text-xs font-medium text-violet-700 hover:bg-violet-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <Pencil size={16} />
-                    Edit
-                  </button>
+                  {/* Button wrapper grid on mobile, row flex on sm screens onwards */}
+                  <div className="grid grid-cols-2 gap-2 gap-y-3 sm:flex sm:items-center">
+                    <button
+                      disabled={!dashboard.selectedInnerTopic}
+                      onClick={dashboard.handleDeleteInnerTopic}
+                      className="flex items-center justify-center rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed transitions sm:py-1.5"
+                    >
+                      Oʻchirish <Trash2 className="ms-1.5" size={15} />
+                    </button>
 
-                  <AddInnerTopicButton
-                    disabled={
-                      !dashboard.selectedTopic
-                    }
-                    onClick={() =>
-                      dashboard.setShowAddInnerTopicModal(
-                        true
-                      )
-                    }
-                  />
+                    <button
+                      disabled={!dashboard.selectedInnerTopic}
+                      onClick={() => dashboard.setShowEditInnerTopicModal(true)}
+                      className="flex items-center justify-center gap-1 rounded-lg bg-violet-50 border border-violet-200 px-3 py-2 text-xs font-medium text-violet-700 hover:bg-violet-100 disabled:opacity-40 disabled:cursor-not-allowed transition sm:py-1.5"
+                    >
+                      <Pencil size={14} />
+                      Tahrirlash
+                    </button>
+
+                    {/* Add button spans full width on mobile view below sm */}
+                    <div className="col-span-2 sm:col-span-1">
+                      <AddInnerTopicButton
+                        disabled={!dashboard.selectedTopic}
+                        onClick={() => dashboard.setShowAddInnerTopicModal(true)}
+                        // Tip: Ensure your inner button component style uses w-full sm:w-auto if needed
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <InnerTopicList
-                innerTopics={
-                  dashboard.innerTopics
-                }
-                selectedInnerTopicId={
-                  dashboard.selectedInnerTopic
-                    ?.id ?? null
-                }
-                onSelectInnerTopic={
-                  dashboard.setSelectedInnerTopic
-                }
-              />
-              <EditInnerTopicModal
+                <InnerTopicList
+                  innerTopics={dashboard.innerTopics}
+                  selectedInnerTopicId={dashboard.selectedInnerTopic?.id ?? null}
+                  onSelectInnerTopic={dashboard.setSelectedInnerTopic}
+                />
+                <EditInnerTopicModal
                   open={dashboard.showEditInnerTopicModal}
-                  onClose={() =>
-                    dashboard.setShowEditInnerTopicModal(false)
-                  }
+                  onClose={() => dashboard.setShowEditInnerTopicModal(false)}
                   initialTitle={dashboard.selectedInnerTopic?.title ?? ""}
                   onSubmit={dashboard.handleUpdateInnerTopic}
                 />
-            </section>
+              </section>
 
-            <section  className="rounded-xl border border-gray-200 bg-white/40 p-5 shadow-sm">
-              <div className="mb-4 flex items-center justify-between gap-4">
-              <h3 className="text-sm font-semibold uppercase tracking-widest text-slate-700">  
-                  Content Blocks
-                </h3>
+              <section className="rounded-xl border border-gray-200 bg-white/40 p-4 sm:p-5 shadow-sm">
+                {/* Second section header updated similarly */}
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                  <h3 className="text-sm font-semibold uppercase tracking-widest text-slate-700">
+                    Kontent bloklari
+                  </h3>
 
-                <AddCodeBlockButton
-                  disabled={
-                    !dashboard.selectedInnerTopic
-                  }
-                  onClick={() =>
-                    dashboard.setShowAddCodeBlockModal(
-                      true
-                    )
-                  }
+                  <div className="w-full sm:w-auto">
+                    <AddCodeBlockButton
+                      disabled={!dashboard.selectedInnerTopic}
+                      onClick={() => dashboard.setShowAddCodeBlockModal(true)}
+                    />
+                  </div>
+                </div>
+
+                <CodeBlockList
+                  codeBlocks={dashboard.codeBlocks}
+                  selectedCodeBlockId={dashboard.selectedCodeBlock?.id ?? null}
+                  onSelectCodeBlock={dashboard.setSelectedCodeBlock}
                 />
-              </div>
-
-              <CodeBlockList
-                codeBlocks={
-                  dashboard.codeBlocks
-                }
-                selectedCodeBlockId={
-                  dashboard.selectedCodeBlock
-                    ?.id ?? null
-                }
-                onSelectCodeBlock={
-                  dashboard.setSelectedCodeBlock
-                }
-              />
-            </section>
+              </section>
           </div>
 
           <CodeViewer
@@ -187,13 +162,9 @@ export default function DashboardMain() {
           />
 
           <ExplanationPanel
-            summary={
-              dashboard.selectedCodeBlock
-                ?.overall_summary
-            }
-            explanations={
-              dashboard.explanations
-            }
+            summary={dashboard.selectedCodeBlock?.overall_summary}
+            explanations={dashboard.explanations}
+            contentType={dashboard.selectedCodeBlock?.content_type ?? "code"}
           />
         <QuizPanel
             questions={dashboard.quizQuestions}

@@ -58,7 +58,7 @@ export default function EditTopicModal({
         className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
       >
         <h2 className="text-2xl font-bold">
-          Edit Topic
+          Mavzuni tahrirlash
         </h2>
 
         <input
@@ -85,7 +85,7 @@ export default function EditTopicModal({
             onClick={onClose}
             className="rounded-xl border px-4 py-2"
           >
-            Cancel
+            Bekor qilish
           </button>
 
           <button
@@ -93,8 +93,8 @@ export default function EditTopicModal({
             className="rounded-xl bg-sky-700  px-4 py-2 font-semibold text-white"
           >
             {saving
-              ? "Saving..."
-              : "Save Changes"}
+              ? "Saqlanyapti..."
+              : "O'zgarishlarni saqlash"}
           </button>
         </div>
       </form>

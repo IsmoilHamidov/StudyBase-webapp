@@ -46,18 +46,18 @@ export default function AddTopicModal({
         onSubmit={handleSubmit}
         className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
       >
-        <h2 className="text-2xl font-bold">Add Topic</h2>
+        <h2 className="text-2xl font-bold">Mavzu qoʻshish</h2>
 
         <input
           className="mt-6 w-full rounded-xl border px-4 py-3"
-          placeholder="Topic title"
+          placeholder="Mavzu nomi"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <textarea
           className="mt-4 w-full rounded-xl border px-4 py-3"
-          placeholder="Description optional"
+          placeholder="Tavsif (ixtiyoriy)"
           rows={4}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -69,14 +69,14 @@ export default function AddTopicModal({
             onClick={onClose}
             className="rounded-xl border px-4 py-2"
           >
-            Cancel
+            Bekor qilish
           </button>
 
           <button
             disabled={saving}
             className="rounded-xl bg-sky-700  px-4 py-2 font-semibold text-white"
           >
-            {saving ? "Saving..." : "Save Topic"}
+            {saving ? "Saqlanmoqda..." : "Mavzuni saqlash"}
           </button>
         </div>
       </form>

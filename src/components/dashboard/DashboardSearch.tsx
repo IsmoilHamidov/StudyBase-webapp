@@ -14,7 +14,7 @@ export default function DashboardSearch({ value, onChange }: DashboardSearchProp
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Search topics..."
+          placeholder="Mavzular boʻyicha qidirish.."
           className="w-full rounded-xl border border-white/60
             pl-9 pr-9 py-2.5 text-sm  text-slate-300 placeholder:text-white/70 outline-none transition
             focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30"

@@ -23,7 +23,7 @@ export default function UserProfileCard() {
         </div>
         <div className="min-w-0">
           <p className="text-xs font-medium text-slate-200 truncate mb-0.5">
-            StudyBase User
+            StudyBase a'zosi
           </p>
           <p className="text-xs text-slate-400 truncate">
             {email}

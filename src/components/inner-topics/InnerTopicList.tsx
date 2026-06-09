@@ -15,7 +15,7 @@ export default function InnerTopicList({
   if (innerTopics.length === 0) {
     return (
       <div className="rounded-xl border border-dashed bg-white p-8 text-center text-gray-500">
-        No inner topics yet.
+         Hozircha ichki mavzular yoʻq.
       </div>
     );
   }

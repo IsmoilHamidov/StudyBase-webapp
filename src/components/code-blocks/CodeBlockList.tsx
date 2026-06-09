@@ -15,8 +15,8 @@ export default function CodeBlockList({
   if (codeBlocks.length === 0) {
     return (
       <EmptyState
-        title="No code blocks yet"
-        description="Add your first code example and let AI explain it line by line."
+        title="Hozircha bloklar yoʻq"
+        description="Birinchi blok namunasini qoʻshing va sunʼiy intellekt uni qatorma-qator tushuntirishiga imkon bering."
       />
     )
   }

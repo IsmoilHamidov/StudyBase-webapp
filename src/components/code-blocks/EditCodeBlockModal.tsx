@@ -58,7 +58,7 @@ export default function EditCodeBlockModal({
         onSubmit={handleSubmit}
         className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl"
       >
-        <h2 className="text-2xl font-bold">Edit Code Block</h2>
+        <h2 className="text-2xl font-bold">Kod blokini tahrirlash</h2>
 
         <input
           className="mt-6 w-full rounded-xl border px-4 py-3"
@@ -91,14 +91,14 @@ export default function EditCodeBlockModal({
             onClick={onClose}
             className="rounded-xl border px-4 py-2"
           >
-            Cancel
+            Bekor qilish
           </button>
 
           <button
             disabled={saving}
             className="rounded-xl bg-sky-700 px-4 py-2 font-semibold text-white"
           >
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? "Saqlanmoqda..." : "Oʻzgarishlarni saqlash"}
           </button>
         </div>
       </form>

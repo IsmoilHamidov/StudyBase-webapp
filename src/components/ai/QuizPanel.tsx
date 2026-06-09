@@ -91,10 +91,10 @@ export default function QuizPanel({
       <div className="mb-6 flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold text-emerald-700">
-            AI Quiz
+             AI Testi
           </p>
           <h2 className="mt-1 text-2xl font-bold text-gray-900">
-            Test Your Knowledge
+            Bilimingizni sinab koʻring!
           </h2>
         </div>
 
@@ -106,17 +106,17 @@ export default function QuizPanel({
           {loading ? (
             <>
               <RefreshCw size={15} className="animate-spin" />
-              Generating...
+              Tayyorlanmoqda...
             </>
           ) : questions.length > 0 ? (
             <>
               <RefreshCw size={15} />
-              New Questions
+              Yangi savollar
             </>
           ) : (
             <>
               <Send  size={15} />
-              Generate Quiz
+                Testni boshlash
             </>
           )}
         </button>
@@ -126,9 +126,9 @@ export default function QuizPanel({
       {!loading && questions.length === 0 && (
         <div className="rounded-2xl border border-dashed border-emerald-200 bg-sky-50 p-8 text-center">
           <BadgeQuestionMark size={36} className="mx-auto mb-3 text-sky-700" />
-          <p className="font-semibold text-gray-700">No quiz yet</p>
+          <p className="font-semibold text-gray-700">Hozircha testlar yoʻq</p>
           <p className="mt-1 text-sm text-gray-500">
-            Click &quot;Generate Quiz&quot; to get 4 multiple-choice questions based on this content.
+           Ushbu kontent asosida 10 ta koʻp tanlovli savol olish uchun "Testni boshlash" tugmasini bosing.
           </p>
         </div>
       )}
@@ -136,14 +136,14 @@ export default function QuizPanel({
       {/* Loading skeleton */}
       {loading && (
         <div className="space-y-4">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2].map((i) => (
             <div
               key={i}
               className="animate-pulse rounded-2xl border border-gray-200 bg-white/40 p-5"
             >
               <div className="mb-4 h-4 w-3/4 rounded bg-gray-200" />
               <div className="grid grid-cols-2 gap-3">
-                {[1, 2, 3, 4].map((j) => (
+                {[1, 2].map((j) => (
                   <div key={j} className="h-10 rounded-xl bg-gray-100" />
                 ))}
               </div>
@@ -168,10 +168,10 @@ export default function QuizPanel({
           </span>
           <span className="text-sm font-medium">
             {score === questions.length
-              ? "🎉 Perfect score! Excellent work."
+              ? "🎉 Ajoyib natija! Barakalla."
               : score >= questions.length / 2
-              ? "👍 Good job! Keep practising."
-              : "📚 Review the material and try again."}
+              ? "👍 Yaxshi harakat! Shunday davom eting."
+              : "📚 Mavzuni qayta koʻrib chiqing va yana urinib koʻring."}
           </span>
         </div>
       )}
@@ -188,7 +188,7 @@ export default function QuizPanel({
                 className="rounded-2xl border border-gray-200 bg-white/40 p-5"
               >
                 <p className="mb-4 font-semibold text-slate-900 leading-7">
-                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-700">
+                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-50 text-sm font-semibold text-emerald-700">
                     {qi + 1}
                   </span>
                   {q.question}
@@ -206,7 +206,7 @@ export default function QuizPanel({
                     if (!isRevealed) {
                       optionClass += isSelected
                         ? " border-sky-400 bg-sky-50 font-medium ext-gray-900"
-                        : " border-gray-200 bg-white/80 hover:bg-gray-50 text-gray-900";
+                        : " border-gray-200 bg-white/80 hover:bg-gray-50 text-md text-black";
                     } else {
                       if (isCorrect) {
                         optionClass += " border-emerald-400 bg-emerald-50 font-medium text-gray-900";
@@ -240,12 +240,12 @@ export default function QuizPanel({
                 </div>
 
                 {/* Check / Result button */}
-                <div className="mt-3 flex items-center justify-end gap-3">
+                <div className="mt-5 md:mt-4 flex items-center justify-end gap-3">
                   {state?.revealed ? (
                     <p className={`text-sm font-semibold ${state.selected === q.correct ? "text-emerald-800" : "text-red-600"}`}>
                       {state.selected === q.correct
-                        ? "✓ Correct!"
-                        : `✗ Correct answer: ${q.correct}`}
+                        ? "✓ Toʻgʻri!"
+                        : `✗ Toʻgʻri javob: ${q.correct}`}
                     </p>
                   ) : (
                     <button
@@ -253,7 +253,7 @@ export default function QuizPanel({
                       onClick={() => handleReveal(qi, q.correct)}
                       className="rounded-lg bg-slate-800 px-4 py-1.5 text-xs font-semibold text-white hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
                     >
-                      Check
+                      Tekshirish
                     </button>
                   )}
                 </div>

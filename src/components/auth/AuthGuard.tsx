@@ -46,7 +46,7 @@ export default function AuthGuard({
   if (checking) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        Checking authentication...
+         Autentifikatsiya tekshirilmoqda...
       </main>
     );
   }

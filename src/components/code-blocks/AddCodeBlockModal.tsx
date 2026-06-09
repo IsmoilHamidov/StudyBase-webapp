@@ -59,12 +59,12 @@ export default function AddCodeBlockModal({
         className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl"
       >
         <h2 className="text-2xl font-bold">
-          Add Learning Block
+           Oʻquv blokini qoʻshish
         </h2>
 
         <input
           className="mt-6 w-full rounded-xl border px-4 py-3"
-          placeholder="Title: Python Variables, Present Continuous, Pythagoras..."
+          placeholder="Sarlavha: Python oʻzgaruvchilari, Present Continuous, Pifagor..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -78,16 +78,16 @@ export default function AddCodeBlockModal({
             )
           }
         >
-          <option value="code">💻 Code</option>
-          <option value="math">📐 Math</option>
-          <option value="english">🇬🇧 English</option>
-          <option value="theory">📚 Theory</option>
-          <option value="other">📝 Other</option>
+          <option value="code">💻 Kod</option>
+          <option value="math">📐 Matematika</option>
+          <option value="english">🇬🇧 Ingliz tili</option>
+          <option value="theory">📚 Nazariya</option>
+          <option value="other">📝 Boshqa</option>
         </select>
 
         <textarea
           className="mt-4 min-h-56 w-full rounded-xl border px-4 py-3 font-mono text-sm"
-          placeholder="Paste code, formula, grammar rule, theory, or any learning content..."
+          placeholder="Kod, formula, grammatika qoidasi, nazariya yoki ixtiyoriy oʻquv kontentini joylashtiring..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
@@ -98,14 +98,14 @@ export default function AddCodeBlockModal({
             onClick={onClose}
             className="rounded-xl border px-4 py-2"
           >
-            Cancel
+            Bekor qilish
           </button>
 
           <button
             disabled={saving}
             className="rounded-xl bg-sky-700  px-4 py-2 font-semibold text-white disabled:bg-gray-400"
           >
-            {saving ? "Saving..." : "Save Block"}
+            {saving ? "Saqlanmoqda..." : "Blokni saqlash"}
           </button>
         </div>
       </form>

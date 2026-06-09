@@ -19,10 +19,10 @@ export default function DashboardStats({
   explanationCount,
 }: DashboardStatsProps) {
   const stats = [
-    { label: "Topics", value: topicCount },
-    { label: "Inner Topics", value: innerTopicCount },
-    { label: "Code Blocks", value: codeBlockCount },
-    { label: "AI Explanations", value: explanationCount },
+    { label: "Mavzular", value: topicCount },
+    { label: "Ichki mavzular", value: innerTopicCount },
+    { label: "Kod bloklari", value: codeBlockCount },
+    { label: "AI tushuntirishlari", value: explanationCount },
   ];
 
   return (

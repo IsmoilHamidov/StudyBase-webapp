@@ -306,3 +306,25 @@ export async function generateQuestions(codeBlockId: string) {
   return response.json();
 }
  
+
+export async function askAboutLine(data: {
+  codeLine: string;
+  existingExplanation: string;
+  userQuestion: string;
+  contentType: string;
+}) {
+  const response = await fetch(
+    `${API_URL}/api/ai/ask-question`,
+    {
+      method: "POST",
+      headers: await getAuthHeaders(),
+      body: JSON.stringify(data),
+    }
+  );
+ 
+  if (!response.ok) {
+    throw new Error("Failed to get answer");
+  }
+ 
+  return response.json();
+}

@@ -21,6 +21,7 @@ export interface CodeBlock {
   title: string;
   language: string;
   code: string;
+  content_type: "code" | "math" | "english" | "theory" | "other" | null;
   overall_summary: string | null;
   created_at: string;
   updated_at: string;

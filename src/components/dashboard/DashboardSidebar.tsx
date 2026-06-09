@@ -32,7 +32,7 @@ export default function DashboardSidebar({
       {/* Topics section — grows to fill space */}
       <div className="flex-shrink-0 pt-5">
         <p className="mb-2.5 px-1 text-xs font-semibold uppercase tracking-widest text-slate-500">
-          Topics
+          Mavzular
         </p>
         <DashboardSearch value={searchTerm} onChange={onSearchChange} />
       </div>
