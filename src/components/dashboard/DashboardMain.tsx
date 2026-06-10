@@ -156,11 +156,6 @@ export default function DashboardMain() {
               />
             )}
 
-          <ExplanationPanel
-            summary={dashboard.selectedCodeBlock?.overall_summary}
-            explanations={dashboard.explanations}
-            contentType={dashboard.selectedCodeBlock?.content_type ?? "code"}
-          />
 
           {dashboard.aiError && (
             <div className="mt-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4">
@@ -181,7 +176,13 @@ export default function DashboardMain() {
               </button>
             </div>
           )}
-          
+
+          <ExplanationPanel
+            summary={dashboard.selectedCodeBlock?.overall_summary}
+            explanations={dashboard.explanations}
+            contentType={dashboard.selectedCodeBlock?.content_type ?? "code"}
+          />
+
           <QuizPanel
               questions={dashboard.quizQuestions}
               loading={dashboard.generatingQuiz}
