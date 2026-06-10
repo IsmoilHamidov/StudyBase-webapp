@@ -46,10 +46,11 @@ export default function DashboardMain() {
           }
         >
         <DashboardHeader
-          title={dashboard.selectedTopic?.title ?? "Mavzu tanlanmagan"}
+          title={dashboard.selectedTopic?.title ?? "Mavzu tanlanmagan"} 
           description={dashboard.selectedTopic?.description}
           onAddTopic={() => dashboard.setShowAddTopicModal(true)}
           onEditTopic={() => dashboard.setShowEditTopicModal(true)}
+          onDeleteTopic={dashboard.handleDeleteTopic}
           editTopicDisabled={!dashboard.selectedTopic}
         />
           
@@ -111,6 +112,7 @@ export default function DashboardMain() {
                   innerTopics={dashboard.innerTopics}
                   selectedInnerTopicId={dashboard.selectedInnerTopic?.id ?? null}
                   onSelectInnerTopic={dashboard.setSelectedInnerTopic}
+                  onAddInnerTopic={() => dashboard.setShowAddInnerTopicModal(true)}
                 />
                 <EditInnerTopicModal
                   open={dashboard.showEditInnerTopicModal}
@@ -139,42 +141,56 @@ export default function DashboardMain() {
                   codeBlocks={dashboard.codeBlocks}
                   selectedCodeBlockId={dashboard.selectedCodeBlock?.id ?? null}
                   onSelectCodeBlock={dashboard.setSelectedCodeBlock}
+                  onAddCodeBlock={() => dashboard.setShowAddCodeBlockModal(true)}
                 />
               </section>
           </div>
 
-          <CodeViewer
-            codeBlock={
-              dashboard.selectedCodeBlock
-            }
-            onExplain={
-              dashboard.handleExplainCode
-            }
-            onDelete={
-              dashboard.handleDeleteCodeBlock
-            }
-            onEdit={() =>
-              dashboard.setShowEditCodeBlockModal(
-                true
-              )
-            }
-            explaining={dashboard.explaining}
-          />
+          {dashboard.selectedCodeBlock && (
+              <CodeViewer
+                codeBlock={dashboard.selectedCodeBlock}
+                onExplain={dashboard.handleExplainCode}
+                onDelete={dashboard.handleDeleteCodeBlock}
+                onEdit={() => dashboard.setShowEditCodeBlockModal(true)}
+                explaining={dashboard.explaining}
+              />
+            )}
 
           <ExplanationPanel
             summary={dashboard.selectedCodeBlock?.overall_summary}
             explanations={dashboard.explanations}
             contentType={dashboard.selectedCodeBlock?.content_type ?? "code"}
           />
-        <QuizPanel
-            questions={dashboard.quizQuestions}
-            loading={dashboard.generatingQuiz}
-            onGenerate={dashboard.handleGenerateQuiz}
-            hasExplanation={
-              !!dashboard.selectedCodeBlock?.overall_summary ||
-              dashboard.explanations.length > 0
-            }
-          />
+
+          {dashboard.aiError && (
+            <div className="mt-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4">
+              <span className="text-lg">⚠️</span>
+              <div>
+                <p className="text-sm font-semibold text-red-700">
+                  AI xizmati vaqtincha ishlamayapti
+                </p>
+                <p className="mt-0.5 text-sm text-red-600">
+                  {dashboard.aiError}
+                </p>
+              </div>
+              <button
+                onClick={() => dashboard.setAiError(null)}
+                className="ml-auto text-red-400 hover:text-red-600 text-lg leading-none"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+          
+          <QuizPanel
+              questions={dashboard.quizQuestions}
+              loading={dashboard.generatingQuiz}
+              onGenerate={dashboard.handleGenerateQuiz}
+              hasExplanation={
+                !!dashboard.selectedCodeBlock?.overall_summary ||
+                dashboard.explanations.length > 0
+              }
+            />
           <AddTopicModal
             open={
               dashboard.showAddTopicModal

@@ -8,6 +8,7 @@ import {
   addTopic,
   deleteCodeBlock,
   deleteInnerTopic,
+  deleteTopic,
   explainCodeBlock,
   generateQuestions,       // <-- ADD THIS IMPORT
   getCodeBlocks,
@@ -33,6 +34,7 @@ export function useDashboardData() {
   const [innerTopics, setInnerTopics] = useState<InnerTopic[]>([]);
   const [codeBlocks, setCodeBlocks] = useState<CodeBlock[]>([]);
   const [explanations, setExplanations] = useState<CodeExplanation[]>([]);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // --- NEW: quiz state ---
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
@@ -127,12 +129,20 @@ export function useDashboardData() {
   async function handleGenerateQuiz() {
     if (!selectedCodeBlock) return;
     try {
+      setAiError(null);
       setGeneratingQuiz(true);
       setQuizQuestions([]);
       const result = await generateQuestions(selectedCodeBlock.id);
       setQuizQuestions(result.data ?? []);
-    } catch (err) {
-      console.error("Quiz generation error:", err);
+    } catch (err: any) {
+      const isRateLimit =
+        err.message?.includes("limiti tugadi") ||
+        err.message?.includes("429");
+      setAiError(
+        isRateLimit
+          ? "Bugungi AI so'rovlar limiti tugadi. Iltimos ertaga qayta urinib ko'ring. 🕐"
+          : null
+      );
     } finally {
       setGeneratingQuiz(false);
     }
@@ -151,6 +161,28 @@ export function useDashboardData() {
     const result = await getInnerTopics(selectedTopic.id);
     setInnerTopics(result.data);
     setSelectedInnerTopic(created.data);
+  }
+
+  async function handleDeleteTopic() {
+    if (!selectedTopic) return;
+    const confirmed = window.confirm(
+      "Delete this topic and all content inside it?"
+    );
+    if (!confirmed) return;
+    await deleteTopic(selectedTopic.id);
+    const result = await getTopics();
+    setTopics(result.data);
+    if (result.data.length > 0) {
+      setSelectedTopic(result.data[0]);
+    } else {
+      setSelectedTopic(null);
+      setInnerTopics([]);
+      setCodeBlocks([]);
+      setSelectedInnerTopic(null);
+      setSelectedCodeBlock(null);
+      setExplanations([]);
+      setQuizQuestions([]);
+    }
   }
 
   async function handleAddCodeBlock(data: {
@@ -174,17 +206,27 @@ export function useDashboardData() {
   async function handleExplainCode() {
     if (!selectedCodeBlock || !selectedInnerTopic) return;
     try {
+      setAiError(null);
       setExplaining(true);
       await explainCodeBlock(selectedCodeBlock.id);
       const explanationResult = await getCodeExplanations(selectedCodeBlock.id);
       const codeBlocksResult = await getCodeBlocks(selectedInnerTopic.id);
       setExplanations(explanationResult.data);
       setCodeBlocks(codeBlocksResult.data);
-      setQuizQuestions([]); // reset quiz after new explanation
+      setQuizQuestions([]);
       const updated = codeBlocksResult.data.find(
         (block: CodeBlock) => block.id === selectedCodeBlock.id
       );
       if (updated) setSelectedCodeBlock(updated);
+    } catch (err: any) {
+      const isRateLimit =
+        err.message?.includes("limiti tugadi") ||
+        err.message?.includes("429");
+      setAiError(
+        isRateLimit
+          ? "Bugungi AI so'rovlar limiti tugadi. Iltimos ertaga qayta urinib ko'ring. 🕐"
+          : null // silent for other errors — they're usually network/server issues
+      );
     } finally {
       setExplaining(false);
     }
@@ -295,6 +337,7 @@ export function useDashboardData() {
     setShowEditCodeBlockModal,
     handleUpdateTopic,
     handleAddTopic,
+    handleDeleteTopic,
     handleAddInnerTopic,
     handleAddCodeBlock,
     handleExplainCode,
@@ -306,5 +349,7 @@ export function useDashboardData() {
     handleUpdateInnerTopic,
     showEditInnerTopicModal,
     setShowEditInnerTopicModal,
+    aiError,
+    setAiError
   };
 }

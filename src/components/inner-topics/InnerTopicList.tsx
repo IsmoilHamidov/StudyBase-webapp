@@ -1,30 +1,34 @@
 import { InnerTopic } from "@/src/types/types";
 
-
 type InnerTopicListProps = {
   innerTopics: InnerTopic[];
   selectedInnerTopicId: string | null;
   onSelectInnerTopic: (innerTopic: InnerTopic) => void;
+  onAddInnerTopic?: () => void; // ADD
 };
 
 export default function InnerTopicList({
   innerTopics,
   selectedInnerTopicId,
   onSelectInnerTopic,
+  onAddInnerTopic, // ADD
 }: InnerTopicListProps) {
   if (innerTopics.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed bg-white p-8 text-center text-gray-500">
-         Hozircha ichki mavzular yoʻq.
-      </div>
+      <button
+        onClick={onAddInnerTopic}
+        className="w-full rounded-xl h-[250px] border border-dashed border-gray-300 bg-white p-8 text-center text-gray-500 hover:border-sky-400 hover:bg-blue-50 hover:text-sky-600 transition cursor-pointer"
+      >
+        <span className="text-2xl mb-2 block">＋</span>
+        Hozircha ichki mavzular yoʻq.
+      </button>
     );
   }
 
   return (
-    <div className="grid gap-3 max-h-[320px] overflow-y-auto pr-2   scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+    <div className="grid gap-3 max-h-[320px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
       {innerTopics.map((item) => {
         const isActive = item.id === selectedInnerTopicId;
-
         return (
           <button
             key={item.id}

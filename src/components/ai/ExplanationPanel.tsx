@@ -18,7 +18,7 @@ export default function ExplanationPanel({
       <div className="mt-8">
         <EmptyState
           title="Hozircha AI tushuntirishi mavjud emas"
-          description="Kod blokini tanlang va har bir qator uchun sodda tushuntirish olish uchun - Batafsil tushuntirish - tugmasini bosing"
+          description="Avval blok tugmasini bosing va har bir qator uchun sodda tushuntirish olish uchun - Batafsil tushuntirish - tugmasini bosing"
         />
       </div>
     );

@@ -15,7 +15,7 @@ export default function UserProfileCard() {
   }, []);
 
   return (
-    <div className="mb-5 xl:mb-0 my-2 overflow-x-auto rounded-xl  p-4 text-sm text-slate-100 border-b border-slate-800">
+    <div className="mb-5 xl:mb-0 my-2 overflow-x-auto rounded-xl  p-4 px-0 text-sm text-slate-100 border-b border-slate-800">
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center
          rounded-full border-2 border-indigo-700 text-sm font-medium text-white flex-shrink-0">

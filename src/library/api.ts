@@ -145,22 +145,19 @@ export async function addCodeBlock(data: {
   return response.json();
 }
 
-export async function explainCodeBlock(
-  codeBlockId: string
-) {
-  const response = await fetch(
-    `${API_URL}/api/ai/explain-code/${codeBlockId}`,
-    {
-      method: "POST",
-      headers: await getAuthHeaders(),
-    }
-  );
+export async function explainCodeBlock(codeBlockId: string) {
+  const response = await fetch(`${API_URL}/api/ai/explain-code/${codeBlockId}`, {
+    method: "POST",
+    headers: await getAuthHeaders(),
+  });
+
+  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error("Failed to explain code");
+    throw new Error(data.message ?? "Failed to explain code");
   }
 
-  return response.json();
+  return data;
 }
 
 export async function getCodeExplanations(
@@ -326,5 +323,21 @@ export async function askAboutLine(data: {
     throw new Error("Failed to get answer");
   }
  
+  return response.json();
+}
+
+export async function deleteTopic(topicId: string) {
+  const response = await fetch(
+    `${API_URL}/api/topics/${topicId}`,
+    {
+      method: "DELETE",
+      headers: await getAuthHeaders(),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete topic");
+  }
+
   return response.json();
 }

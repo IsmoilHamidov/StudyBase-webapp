@@ -1,31 +1,37 @@
 import { CodeBlock } from "@/src/types/types";
-import EmptyState from "../dashboard/EmptyState";
 
 type CodeBlockListProps = {
   codeBlocks: CodeBlock[];
   selectedCodeBlockId: string | null;
   onSelectCodeBlock: (codeBlock: CodeBlock) => void;
+  onAddCodeBlock?: () => void; // ADD
 };
 
 export default function CodeBlockList({
   codeBlocks,
   selectedCodeBlockId,
   onSelectCodeBlock,
+  onAddCodeBlock, // ADD
 }: CodeBlockListProps) {
   if (codeBlocks.length === 0) {
     return (
-      <EmptyState
-        title="Hozircha bloklar yoʻq"
-        description="Birinchi blok namunasini qoʻshing va sunʼiy intellekt uni qatorma-qator tushuntirishiga imkon bering."
-      />
-    )
+      <button
+        onClick={onAddCodeBlock}
+        className="w-full h-[250px] rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center hover:border-sky-400 hover:bg-blue-50 transition cursor-pointer"
+      >
+        <span className="text-2xl mb-2 block">＋</span>
+        <p className="font-semibold text-gray-700">Hozircha bloklar yoʻq</p>
+        <p className="mt-1 text-sm text-gray-500">
+          Birinchi blok namunasini qoʻshing va sunʼiy intellekt uni qatorma-qator tushuntirishiga imkon bering.
+        </p>
+      </button>
+    );
   }
 
   return (
-    <div className="space-y-3  max-h-[320px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+    <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
       {codeBlocks.map((block) => {
         const isActive = block.id === selectedCodeBlockId;
-
         return (
           <button
             key={block.id}
@@ -38,12 +44,10 @@ export default function CodeBlockList({
           >
             <div className="flex items-center justify-between gap-3">
               <h4 className="font-semibold">{block.title}</h4>
-
               <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
                 {block.language}
               </span>
             </div>
-
             <p className="mt-2 line-clamp-2 text-sm text-gray-500">
               {block.code}
             </p>

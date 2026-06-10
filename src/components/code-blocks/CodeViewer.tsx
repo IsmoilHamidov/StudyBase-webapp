@@ -17,8 +17,8 @@ type CodeViewerProps = {
   }: CodeViewerProps) {
   if (!codeBlock) {
     return (
-      <div className="mt-8 rounded-2xl border border-dashed bg-white/40 p-8 text-center text-gray-500">
-         Tarkibini koʻrish uchun kod blokini tanlang.
+      <div className="mt-8 rounded-2xl border  bg-white/40 p-8 text-center text-gray-500">
+         Tarkibini koʻrish uchun Kontent Blokini tanlang.
       </div>
     );
   }
@@ -34,9 +34,9 @@ type CodeViewerProps = {
             – {codeBlock.title}
           </h3>
 
-          <p className="mt-0.5 text-xs text-gray-500 sm:text-sm">
+          {/* <p className="mt-0.5 text-xs text-gray-500 sm:text-sm">
             Yo'nalish: <span className="font-mono bg-gray-200/60 px-1.5 py-0.5 rounded text-gray-700">{codeBlock.language}</span>
-          </p>
+          </p> */}
         </div>
 
         {/* Responsive actions matrix container */}
