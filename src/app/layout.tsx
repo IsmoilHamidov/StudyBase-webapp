@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StudyBase Learning Platform 📕",
+  title: "StudyBase Learning Platform 📗",
   description: "Master coding, math, and theory with intelligent explanations and automated question generation.",
 };
 

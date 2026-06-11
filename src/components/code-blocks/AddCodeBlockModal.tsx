@@ -92,7 +92,7 @@ export default function AddCodeBlockModal({
           onChange={(e) => setContent(e.target.value)}
         />
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <button
             type="button"
             onClick={onClose}

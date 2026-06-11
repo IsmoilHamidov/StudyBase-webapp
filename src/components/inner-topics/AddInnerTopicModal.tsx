@@ -34,7 +34,7 @@ export default function AddInnerTopicModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+        className="w-full max-w-md rounded-2xl bg-white p-6 py-7 shadow-xl"
       >
         <h2 className="text-2xl font-bold">Ichki mavzu qoʻshish</h2>
 
@@ -45,14 +45,14 @@ export default function AddInnerTopicModal({
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-7 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <button type="button" onClick={onClose} className="rounded-xl border px-4 py-2">
             Bekor qilish
           </button>
 
           <button
             disabled={saving}
-            className="rounded-xl bg-sky-700  px-4 py-2 font-semibold text-white"
+            className="rounded-xl bg-sky-700  px-4 py-3 font-semibold text-white"
           >
             {saving ? "Saqlanmoqda..." : "Ichki mavzuni saqlash"}
           </button>

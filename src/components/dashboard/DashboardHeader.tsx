@@ -34,7 +34,7 @@ export default function DashboardHeader({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 gap-y-4">
         <button
           onClick={onDeleteTopic}
           disabled={editTopicDisabled}

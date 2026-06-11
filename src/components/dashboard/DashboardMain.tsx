@@ -70,16 +70,16 @@ export default function DashboardMain() {
           <div className="relative  mb-12">
             <div className="h-4 border-b-2 border-gray-300 rounded-full"></div>
           </div>
-        <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-              <section className="rounded-xl border border-gray-200 bg-white/40 p-4 sm:p-5 shadow-sm">
+        <div className="flex flex-col gap-y-7 lg:grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+              <section className="rounded-xl border border-gray-200 bg-white/40 p-5 shadow-sm">
                 {/* Header section adapted to stack on mobile */}
-                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                   <h3 className="text-sm font-semibold uppercase tracking-widest text-slate-700">
                     Modullar
                   </h3>
 
                   {/* Button wrapper grid on mobile, row flex on sm screens onwards */}
-                  <div className="grid grid-cols-2 gap-2 gap-y-3 sm:flex sm:items-center">
+                  <div className="grid grid-cols-2 gap-3 gap-y-4 sm:flex sm:items-center">
                     <button
                       disabled={!dashboard.selectedInnerTopic}
                       onClick={dashboard.handleDeleteInnerTopic}
@@ -122,9 +122,9 @@ export default function DashboardMain() {
                 />
               </section>
 
-              <section className="rounded-xl border border-gray-200 bg-white/40 p-4 sm:p-5 shadow-sm">
+              <section className="rounded-xl border border-gray-200 bg-white/40 p-5 shadow-sm">
                 {/* Second section header updated similarly */}
-                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                   <h3 className="text-sm font-semibold uppercase tracking-widest text-slate-700">
                     Kontent bloklari
                   </h3>

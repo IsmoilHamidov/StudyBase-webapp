@@ -1,7 +1,9 @@
 "use client";
 
-import { CodeBlock } from "@/src/types/types";
 import { useEffect, useState } from "react";
+import type { CodeBlock } from "@/src/types/types";
+
+type ContentType = "code" | "math" | "english" | "theory" | "other";
 
 type EditCodeBlockModalProps = {
   open: boolean;
@@ -21,33 +23,31 @@ export default function EditCodeBlockModal({
   onSubmit,
 }: EditCodeBlockModalProps) {
   const [title, setTitle] = useState("");
-  const [language, setLanguage] = useState("python");
-  const [code, setCode] = useState("");
+  const [contentType, setContentType] = useState<ContentType>("code");
+  const [content, setContent] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!codeBlock) return;
-
-    setTitle(codeBlock.title);
-    setLanguage(codeBlock.language);
-    setCode(codeBlock.code);
+    if (codeBlock) {
+      setTitle(codeBlock.title);
+      setContentType((codeBlock.content_type as ContentType) ?? "code");
+      setContent(codeBlock.code);
+    }
   }, [codeBlock]);
 
-  if (!open || !codeBlock) return null;
+  if (!open) return null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
-    if (!title.trim() || !code.trim()) return;
+    if (!title.trim() || !content.trim()) return;
 
     setSaving(true);
-
+    // Keep the backend contract: language carries content_type, code carries content
     await onSubmit({
       title: title.trim(),
-      language,
-      code: code.trim(),
+      language: contentType,
+      code: content.trim(),
     });
-
     setSaving(false);
     onClose();
   }
@@ -58,34 +58,35 @@ export default function EditCodeBlockModal({
         onSubmit={handleSubmit}
         className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl"
       >
-        <h2 className="text-2xl font-bold">Kod blokini tahrirlash</h2>
+        <h2 className="text-2xl font-bold">Blokni tahrirlash</h2>
 
         <input
           className="mt-6 w-full rounded-xl border px-4 py-3"
+          placeholder="Sarlavha: Python oʻzgaruvchilari, Present Continuous, Pifagor..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <select
           className="mt-4 w-full rounded-xl border px-4 py-3"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
+          value={contentType}
+          onChange={(e) => setContentType(e.target.value as ContentType)}
         >
-          <option value="python">Python</option>
-          <option value="javascript">JavaScript</option>
-          <option value="typescript">TypeScript</option>
-          <option value="dart">Dart</option>
-          <option value="html">HTML</option>
-          <option value="css">CSS</option>
+          <option value="code">💻 Kod</option>
+          <option value="math">📐 Matematika</option>
+          <option value="english">🇬🇧 Ingliz tili</option>
+          <option value="theory">📚 Nazariya</option>
+          <option value="other">📝 Boshqa</option>
         </select>
 
         <textarea
           className="mt-4 min-h-56 w-full rounded-xl border px-4 py-3 font-mono text-sm"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
+          placeholder="Kod, formula, grammatika qoidasi, nazariya yoki ixtiyoriy oʻquv kontentini joylashtiring..."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
         />
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
@@ -96,9 +97,9 @@ export default function EditCodeBlockModal({
 
           <button
             disabled={saving}
-            className="rounded-xl bg-sky-700 px-4 py-2 font-semibold text-white"
+            className="rounded-xl bg-sky-700 px-4 py-2 font-semibold text-white disabled:bg-gray-400"
           >
-            {saving ? "Saqlanmoqda..." : "Oʻzgarishlarni saqlash"}
+            {saving ? "Saqlanmoqda..." : "Saqlash"}
           </button>
         </div>
       </form>
