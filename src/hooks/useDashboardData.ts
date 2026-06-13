@@ -188,7 +188,6 @@ export function useDashboardData() {
   async function handleAddCodeBlock(data: {
     title: string;
     content: string;
-    language?: string
     contentType: "code" | "math" | "english" | "theory" | "other";
   }) {
     if (!selectedInnerTopic) return;
@@ -196,7 +195,6 @@ export function useDashboardData() {
       innerTopicId: selectedInnerTopic.id,
       title: data.title,
       content: data.content,
-      language: data.language,
       contentType: data.contentType,
       subject: selectedTopic?.title ?? "",
     });
@@ -252,7 +250,6 @@ export function useDashboardData() {
 
   async function handleUpdateCodeBlock(data: {
     title: string;
-    language: string;
     code: string;
   }) {
     if (!selectedCodeBlock || !selectedInnerTopic) return;

@@ -1,17 +1,25 @@
 import { CodeBlock } from "@/src/types/types";
 
+const contentTypeLabel: Record<string, string> = {
+  code: "💻 Kod",
+  math: "📐 Matematika",
+  english: "🇬🇧 Ingliz tili",
+  theory: "📚 Nazariya",
+  other: "📝 Boshqa",
+};
+
 type CodeBlockListProps = {
   codeBlocks: CodeBlock[];
   selectedCodeBlockId: string | null;
   onSelectCodeBlock: (codeBlock: CodeBlock) => void;
-  onAddCodeBlock?: () => void; // ADD
+  onAddCodeBlock?: () => void;
 };
 
 export default function CodeBlockList({
   codeBlocks,
   selectedCodeBlockId,
   onSelectCodeBlock,
-  onAddCodeBlock, // ADD
+  onAddCodeBlock,
 }: CodeBlockListProps) {
   if (codeBlocks.length === 0) {
     return (
@@ -45,7 +53,7 @@ export default function CodeBlockList({
             <div className="flex items-center justify-between gap-3">
               <h4 className="font-semibold">{block.title}</h4>
               <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                {block.language}
+                {contentTypeLabel[block.content_type ?? "other"]}
               </span>
             </div>
             <p className="mt-2 line-clamp-2 text-sm text-gray-500">

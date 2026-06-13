@@ -19,7 +19,7 @@ export interface CodeBlock {
   id: string;
   inner_topic_id: string;
   title: string;
-  language: string;
+  language?: string | null
   code: string;
   content_type: "code" | "math" | "english" | "theory" | "other" | null;
   overall_summary: string | null;

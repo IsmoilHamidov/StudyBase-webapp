@@ -11,17 +11,11 @@ type EditCodeBlockModalProps = {
   onClose: () => void;
   onSubmit: (data: {
     title: string;
-    language: string;
     code: string;
   }) => Promise<void>;
 };
 
-export default function EditCodeBlockModal({
-  open,
-  codeBlock,
-  onClose,
-  onSubmit,
-}: EditCodeBlockModalProps) {
+export default function EditCodeBlockModal({ open, codeBlock, onClose, onSubmit }: EditCodeBlockModalProps) {
   const [title, setTitle] = useState("");
   const [contentType, setContentType] = useState<ContentType>("code");
   const [content, setContent] = useState("");
@@ -40,12 +34,9 @@ export default function EditCodeBlockModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
-
     setSaving(true);
-    // Keep the backend contract: language carries content_type, code carries content
     await onSubmit({
       title: title.trim(),
-      language: contentType,
       code: content.trim(),
     });
     setSaving(false);
@@ -54,10 +45,7 @@ export default function EditCodeBlockModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl"
-      >
+      <form onSubmit={handleSubmit} className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
         <h2 className="text-2xl font-bold">Blokni tahrirlash</h2>
 
         <input
@@ -87,14 +75,9 @@ export default function EditCodeBlockModal({
         />
 
         <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-xl border px-4 py-2"
-          >
+          <button type="button" onClick={onClose} className="rounded-xl border px-4 py-2">
             Bekor qilish
           </button>
-
           <button
             disabled={saving}
             className="rounded-xl bg-sky-700 px-4 py-2 font-semibold text-white disabled:bg-gray-400"

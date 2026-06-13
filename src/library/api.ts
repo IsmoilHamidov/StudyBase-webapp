@@ -117,35 +117,23 @@ export async function addCodeBlock(data: {
   title: string;
   subject: string;
   content: string;
-  language?: string;  
-  contentType?:
-    | "code"
-    | "math"
-    | "english"
-    | "theory"
-    | "other";
-}){
-  const response = await fetch(
-    `${API_URL}/api/code-blocks`,
-    {
-      method: "POST",
-      headers: await getAuthHeaders(),
-      body: JSON.stringify({
-        innerTopicId: data.innerTopicId,
-        title: data.title,
-        content: data.content,
-        contentType: data.contentType,
-        language: data.language ?? "plaintext", 
-      }),
-    }
-  );
+  contentType?: "code" | "math" | "english" | "theory" | "other";
+}) {
+  const response = await fetch(`${API_URL}/api/code-blocks`, {
+    method: "POST",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({
+      innerTopicId: data.innerTopicId,
+      title: data.title,
+      content: data.content,
+      contentType: data.contentType,
+    }),
+  });
 
-  if (!response.ok) {
-    throw new Error("Failed to add code block");
-  }
-
+  if (!response.ok) throw new Error("Failed to add code block");
   return response.json();
 }
+
 
 export async function explainCodeBlock(codeBlockId: string) {
   const response = await fetch(`${API_URL}/api/ai/explain-code/${codeBlockId}`, {
@@ -204,25 +192,16 @@ export async function updateCodeBlock(
   codeBlockId: string,
   data: {
     title: string;
-    language: string;
     code: string;
   }
 ) {
-  const response = await fetch(
-    `${API_URL}/api/code-blocks/${codeBlockId}`,
-    {
-      method: "PUT",
-      headers: await getAuthHeaders(),
-      body: JSON.stringify(data),
-    }
-  );
+  const response = await fetch(`${API_URL}/api/code-blocks/${codeBlockId}`, {
+    method: "PUT",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
 
-  if (!response.ok) {
-    throw new Error(
-      "Failed to update code block"
-    );
-  }
-
+  if (!response.ok) throw new Error("Failed to update code block");
   return response.json();
 }
 
