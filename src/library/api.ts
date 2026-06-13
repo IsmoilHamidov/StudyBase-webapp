@@ -117,6 +117,7 @@ export async function addCodeBlock(data: {
   title: string;
   subject: string;
   content: string;
+  language?: string;  
   contentType?:
     | "code"
     | "math"
@@ -134,6 +135,7 @@ export async function addCodeBlock(data: {
         title: data.title,
         content: data.content,
         contentType: data.contentType,
+        language: data.language ?? "plaintext", 
       }),
     }
   );

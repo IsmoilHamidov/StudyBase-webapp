@@ -181,6 +181,7 @@ export default function DashboardMain() {
             summary={dashboard.selectedCodeBlock?.overall_summary}
             explanations={dashboard.explanations}
             contentType={dashboard.selectedCodeBlock?.content_type ?? "code"}
+            language={dashboard.selectedCodeBlock?.language ?? "plaintext"} 
           />
 
           <QuizPanel

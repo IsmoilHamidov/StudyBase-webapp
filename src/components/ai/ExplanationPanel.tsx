@@ -6,12 +6,14 @@ type ExplanationPanelProps = {
   summary?: string | null;
   explanations: CodeExplanation[];
   contentType?: string;  // <-- NEW
+  language?: string; 
 };
 
 export default function ExplanationPanel({
   summary,
   explanations,
   contentType = "code",  // <-- NEW
+  language = "plaintext",
 }: ExplanationPanelProps) {
   if (!summary && explanations.length === 0) {
     return (
@@ -58,6 +60,7 @@ export default function ExplanationPanel({
             key={item.id}
             item={item}
             contentType={contentType}  // <-- NEW
+            language={language} 
           />
         ))}
       </div>
