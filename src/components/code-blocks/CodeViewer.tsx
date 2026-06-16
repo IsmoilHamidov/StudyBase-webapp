@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { CodeBlock } from "@/src/types/types";
-import { Maximize2, ZoomIn, ZoomOut, Sun, Moon, X, Pencil, Trash2 } from "lucide-react";
+import { Maximize2, ZoomIn, ZoomOut, Sun, Moon, X, Pencil, Trash2, Astroid } from "lucide-react";
 
 import Prism from "prismjs";
 import "prismjs/themes/prism-okaidia.css";
@@ -101,7 +101,7 @@ export default function CodeViewer({
                 className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-200 transition sm:px-4 sm:py-2 sm:text-sm"
               >
                 <Maximize2 size={16} />
-                Kodni koʻrish
+                 Koʻrish
               </button>
             )}
 
@@ -122,8 +122,9 @@ export default function CodeViewer({
             <button
               onClick={onExplain}
               disabled={explaining}
-              className="col-span-2 rounded-lg bg-indigo-700 cursor-pointer px-4 py-2 text-center text-xs font-medium text-white hover:bg-indigo-800 disabled:opacity-40 disabled:cursor-not-allowed transition sm:col-span-1 sm:text-sm"
-            >
+              className="flex items-center gap-x-2 col-span-2 rounded-lg bg-indigo-700 cursor-pointer px-4 py-2 text-center text-xs font-medium text-white hover:bg-indigo-800 disabled:opacity-40 disabled:cursor-not-allowed transition sm:col-span-1 sm:text-sm"
+            > 
+              <Astroid size={14}/>
               {explaining ? "Tushuntirilmoqda..." : "Batafsil tushuntirish"}
             </button>
           </div>
@@ -132,7 +133,7 @@ export default function CodeViewer({
         {/* ── Inline preview — only rendered for code blocks ── */}
         {isCode && (
           <pre className="max-h-[420px] overflow-auto !bg-[#2b2b2b] p-4 sm:p-5">
-            <code ref={inlineCodeRef} className={`${langClass} !text-base !leading-6 !font-normal`}>
+            <code ref={inlineCodeRef} className={`${langClass} !text-sm xl:!text-base !leading-6 !font-normal`}>
               {codeBlock.code}
             </code>
           </pre>
@@ -328,7 +329,7 @@ export default function CodeViewer({
                 }`}
               >
                 <Pencil size={15} />
-                Tahrirlash
+                <span className="hidden md:inline-block">Tahrirlash</span>
               </button>
 
               {/* Delete */}
@@ -342,20 +343,20 @@ export default function CodeViewer({
                 }`}
               >
                 <Trash2 size={15} />
-                Oʻchirish
+                <span className="hidden md:inline-block">Oʻchirish</span>
               </button>
 
               {/* Close */}
               <button
                 onClick={() => setModalOpen(false)}
                 title="Yopish"
-                className={`ml-1 rounded-lg p-2 transition ${
+                className={`ml-2 rounded-lg p-2 transition ${
                   darkMode
-                    ? "text-gray-400 hover:bg-white/10 hover:text-white"
-                    : "text-gray-500 hover:bg-gray-200 hover:text-gray-900"
+                    ? "text-gray-300 hover:bg-white/10 hover:text-white"
+                    : "text-gray-600 hover:bg-gray-200 hover:text-gray-900"
                 }`}
               >
-                <X size={18} />
+                <X size={20} />
               </button>
             </div>
           </div>

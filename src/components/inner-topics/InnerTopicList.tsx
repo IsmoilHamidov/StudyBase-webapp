@@ -1,48 +1,105 @@
-import { InnerTopic } from "@/src/types/types";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { GripVertical } from "lucide-react";
+import type { InnerTopic } from "@/src/types/types";
 
 type InnerTopicListProps = {
   innerTopics: InnerTopic[];
   selectedInnerTopicId: string | null;
-  onSelectInnerTopic: (innerTopic: InnerTopic) => void;
-  onAddInnerTopic?: () => void; // ADD
+  onSelectInnerTopic: (topic: InnerTopic) => void;
+  onAddInnerTopic: () => void;
+  onReorder: (orderedIds: string[]) => Promise<void>;
 };
 
 export default function InnerTopicList({
   innerTopics,
   selectedInnerTopicId,
   onSelectInnerTopic,
-  onAddInnerTopic, // ADD
+  onAddInnerTopic,
+  onReorder,
 }: InnerTopicListProps) {
-  if (innerTopics.length === 0) {
+  const [items, setItems] = useState<InnerTopic[]>(innerTopics);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const isDraggingRef = useRef(false);
+
+  // Only sync from parent when NOT dragging (avoids resetting mid-drag)
+  useEffect(() => {
+    if (!isDraggingRef.current) {
+      setItems(innerTopics);
+    }
+  }, [innerTopics]);
+
+  function handleDragStart(id: string) {
+    isDraggingRef.current = true;
+    setDraggingId(id);
+  }
+
+  function handleDragEnter(id: string) {
+    if (id === draggingId) return;
+
+    setItems((prev) => {
+      const from = prev.findIndex((t) => t.id === draggingId);
+      const to = prev.findIndex((t) => t.id === id);
+      if (from === -1 || to === -1) return prev;
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  }
+
+  async function handleDragEnd() {
+    isDraggingRef.current = false;
+    setDraggingId(null);
+    await onReorder(items.map((t) => t.id));
+  }
+
+  if (items.length === 0) {
     return (
       <button
         onClick={onAddInnerTopic}
-        className="w-full rounded-xl h-[250px] border border-dashed border-gray-300 bg-white p-8 text-center text-gray-500 hover:border-sky-400 hover:bg-blue-50 hover:text-sky-600 transition cursor-pointer"
+        className="w-full border border-dashed rounded-2xl flex flex-col items-center justify-center gap-4 py-10 text-center cursor-pointer"
       >
-        <span className="text-2xl mb-2 block">＋</span>
-        Hozircha ichki mavzular yoʻq.
+        <p className="text-sm text-gray-500">Hali modullar yo'q</p>
+        <span className="text-base text-sky-700 pointer-events-none">
+          + Birinchi modulni qo'shing
+        </span>
       </button>
     );
   }
 
   return (
-    <div className="grid gap-3 max-h-[320px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-      {innerTopics.map((item) => {
-        const isActive = item.id === selectedInnerTopicId;
+    <ul className="flex flex-col gap-1.5 max-h-[400px] overflow-y-auto pr-1">
+      {items.map((topic) => {
+        const isSelected = topic.id === selectedInnerTopicId;
+        const isDragging = topic.id === draggingId;
+
         return (
-          <button
-            key={item.id}
-            onClick={() => onSelectInnerTopic(item)}
-            className={`rounded-xl border p-4 text-left transition ${
-              isActive
-                ? "border-sky-700 bg-blue-50"
-                : "border-gray-200 bg-white hover:bg-gray-50"
-            }`}
+          <li
+            key={topic.id}
+            draggable
+            onDragStart={() => handleDragStart(topic.id)}
+            onDragEnter={() => handleDragEnter(topic.id)}
+            onDragEnd={handleDragEnd}
+            onDragOver={(e) => e.preventDefault()}
+            className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-base font-medium transition-all cursor-pointer select-none ${
+              isSelected
+                ? "border-sky-300 bg-sky-50 text-slate-800"
+                : "border-transparent bg-gray-50 text-slate-800 hover:bg-gray-100"
+            } ${isDragging ? "opacity-40 scale-95" : "opacity-100"}`}
+            onClick={() => onSelectInnerTopic(topic)}
           >
-            <h3 className="font-semibold">{item.title}</h3>
-          </button>
+            <span
+              className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-500 shrink-0"
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <GripVertical size={15} />
+            </span>
+            <span className="truncate flex-1">{topic.title}</span>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }

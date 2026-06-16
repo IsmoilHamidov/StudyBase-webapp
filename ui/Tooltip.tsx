@@ -5,9 +5,10 @@ import { useState, useRef } from "react";
 type TooltipProps = {
   text: string;
   children: React.ReactNode;
+  block?: boolean; // set true to make the wrapper display:block (full width)
 };
 
-export default function Tooltip({ text, children }: TooltipProps) {
+export default function Tooltip({ text, children, block = false }: TooltipProps) {
   const [visible, setVisible] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -21,7 +22,11 @@ export default function Tooltip({ text, children }: TooltipProps) {
   }
 
   return (
-    <div className="relative inline-block" onMouseEnter={show} onMouseLeave={hide}>
+    <div
+      className={`relative ${block ? "block w-full" : "inline-block"}`}
+      onMouseEnter={show}
+      onMouseLeave={hide}
+    >
       {children}
       {visible && (
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 whitespace-nowrap rounded-lg bg-gray-800 px-3 py-1.5 text-xs font-medium text-white shadow-lg">

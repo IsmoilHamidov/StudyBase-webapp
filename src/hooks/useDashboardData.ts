@@ -15,6 +15,8 @@ import {
   getCodeExplanations,
   getInnerTopics,
   getTopics,
+  reorderCodeBlocks,
+  reorderInnerTopics,
   updateCodeBlock,
   updateInnerTopic,
   updateTopic,
@@ -300,6 +302,22 @@ export function useDashboardData() {
     if (refreshed) setSelectedInnerTopic(refreshed);
   }
 
+  async function handleReorderInnerTopics(orderedIds: string[]) {
+        setInnerTopics((prev) => {
+          const map = new Map(prev.map((t) => [t.id, t]));
+          return orderedIds.map((id) => map.get(id)!).filter(Boolean);
+        });
+        await reorderInnerTopics(orderedIds);
+      }
+    
+      async function handleReorderCodeBlocks(orderedIds: string[]) {
+        setCodeBlocks((prev) => {
+          const map = new Map(prev.map((b) => [b.id, b]));
+          return orderedIds.map((id) => map.get(id)!).filter(Boolean);
+        });
+        await reorderCodeBlocks(orderedIds);
+      }
+
   return {
     topics,
     filteredTopics,
@@ -346,6 +364,8 @@ export function useDashboardData() {
     showEditTopicModal,
     setShowEditTopicModal,
     handleUpdateInnerTopic,
+    handleReorderInnerTopics,
+    handleReorderCodeBlocks,
     showEditInnerTopicModal,
     setShowEditInnerTopicModal,
     aiError,

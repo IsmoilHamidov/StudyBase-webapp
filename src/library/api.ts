@@ -322,3 +322,26 @@ export async function deleteTopic(topicId: string) {
 
   return response.json();
 }
+
+export async function reorderInnerTopics(orderedIds: string[]) {
+  const response = await fetch(`${API_URL}/api/inner-topics/reorder`, {
+    method: "POST",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({ orderedIds }),
+  });
+ 
+  if (!response.ok) throw new Error("Failed to reorder inner topics");
+  return response.json();
+}
+ 
+
+export async function reorderCodeBlocks(orderedIds: string[]) {
+  const response = await fetch(`${API_URL}/api/code-blocks/reorder`, {
+    method: "POST",
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({ orderedIds }),
+  });
+ 
+  if (!response.ok) throw new Error("Failed to reorder code blocks");
+  return response.json();
+}

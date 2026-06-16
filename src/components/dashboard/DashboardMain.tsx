@@ -74,7 +74,7 @@ export default function DashboardMain() {
               <section className="rounded-xl border border-gray-200 bg-white/40 p-5 shadow-sm">
                 {/* Header section adapted to stack on mobile */}
                 <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-widest text-slate-700">
+                  <h3 className="text-sm font-semibold uppercase tracking-widest text-slate-900">
                     Modullar
                   </h3>
 
@@ -113,6 +113,7 @@ export default function DashboardMain() {
                   selectedInnerTopicId={dashboard.selectedInnerTopic?.id ?? null}
                   onSelectInnerTopic={dashboard.setSelectedInnerTopic}
                   onAddInnerTopic={() => dashboard.setShowAddInnerTopicModal(true)}
+                  onReorder={dashboard.handleReorderInnerTopics}
                 />
                 <EditInnerTopicModal
                   open={dashboard.showEditInnerTopicModal}
@@ -142,6 +143,8 @@ export default function DashboardMain() {
                   selectedCodeBlockId={dashboard.selectedCodeBlock?.id ?? null}
                   onSelectCodeBlock={dashboard.setSelectedCodeBlock}
                   onAddCodeBlock={() => dashboard.setShowAddCodeBlockModal(true)}
+                  onReorder={dashboard.handleReorderCodeBlocks}
+                  hasInnerTopic={!!dashboard.selectedInnerTopic} 
                 />
               </section>
           </div>
