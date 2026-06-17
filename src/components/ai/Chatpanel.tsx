@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { X, Send, Bot, Loader2 } from "lucide-react";
 import { askAboutLine } from "@/src/library/api";
 
@@ -32,6 +32,72 @@ export default function ChatPanel({
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // ── Drag state ─────────────────────────────────────────────────────────
+  const panelRef = useRef<HTMLDivElement>(null);
+  const originRect = useRef<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const dragRef = useRef({
+    dragging: false,
+    startX: 0,
+    startY: 0,
+    baseX: 0,
+    baseY: 0,
+  });
+
+  // Capture the panel's initial (untransformed) position once, on mount
+  useLayoutEffect(() => {
+    if (panelRef.current && !originRect.current) {
+      const rect = panelRef.current.getBoundingClientRect();
+      originRect.current = {
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+      };
+    }
+  }, []);
+
+  function handleDragPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    dragRef.current.dragging = true;
+    dragRef.current.startX = e.clientX;
+    dragRef.current.startY = e.clientY;
+    dragRef.current.baseX = offset.x;
+    dragRef.current.baseY = offset.y;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  function handleDragPointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!dragRef.current.dragging || !originRect.current) return;
+
+    const deltaX = e.clientX - dragRef.current.startX;
+    const deltaY = e.clientY - dragRef.current.startY;
+
+    let newX = dragRef.current.baseX + deltaX;
+    let newY = dragRef.current.baseY + deltaY;
+
+    // Clamp so the panel stays within the viewport
+    const { left, top, width, height } = originRect.current;
+    const minX = -left;
+    const maxX = window.innerWidth - width - left;
+    const minY = -top;
+    const maxY = window.innerHeight - height - top;
+
+    newX = Math.min(Math.max(newX, minX), maxX);
+    newY = Math.min(Math.max(newY, minY), maxY);
+
+    setOffset({ x: newX, y: newY });
+  }
+
+  function handleDragPointerUp(e: React.PointerEvent<HTMLDivElement>) {
+    dragRef.current.dragging = false;
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -82,33 +148,43 @@ export default function ChatPanel({
   }
 
   return (
-    <div className="fixed bottom-10 right-6 z-50 flex w-[360px] flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl">
-      {/* Header */}
-      <div className="flex items-center justify-between rounded-t-2xl bg-indigo-700 px-4 py-3">
+    <div
+      ref={panelRef}
+      style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
+      className="fixed bottom-10 right-6 z-50 flex w-[370px] flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl"
+    >
+      {/* Header — drag handle */}
+      <div
+        onPointerDown={handleDragPointerDown}
+        onPointerMove={handleDragPointerMove}
+        onPointerUp={handleDragPointerUp}
+        className="flex items-center justify-between rounded-t-2xl bg-indigo-700 px-4 py-3 cursor-grab active:cursor-grabbing touch-none select-none"
+      >
         <div className="flex items-center gap-2">
           <Bot size={18} className="text-white" />
           <p className="text-sm font-semibold text-white">
-             Ai chat bot
+             Ai chat messenger
           </p>
         </div>
         <button
+          onPointerDown={(e) => e.stopPropagation()}
           onClick={onClose}
-          className="text-white/80 hover:text-white transition"
+          className="text-white/80 hover:text-white transition w-9 flex justify-center h-full "
         >
-          <X size={18} />
+          <X size={20} />
         </button>
       </div>
 
       {/* Context pill — shows which line is being discussed */}
-      <div className="border-b border-gray-100 bg-gray-50 px-4 py-3">
-        <p className="text-xs text-slate-900 font-medium mb-1">Muhokamadagi qator:</p>
+      <div className="border-b border-gray-100 bg-gray-50 px-4 pt-4 pb-5">
+        <p className="text-sm text-slate-900 font-medium mb-1">Muhokamadagi qator:</p>
         <code className="block truncate rounded bg-slate-900 px-2 py-1.5 text-xs text-slate-100">
           {codeLine}
         </code>
       </div>
 
       {/* Messages */}
-      <div className="flex max-h-72 flex-col gap-3 overflow-y-auto p-4">
+      <div className="flex max-h-74 flex-col gap-3 overflow-y-auto p-4">
         {messages.map((msg, i) => (
           <div
             key={i}

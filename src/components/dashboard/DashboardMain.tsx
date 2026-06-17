@@ -26,11 +26,41 @@ import QuizPanel from "../ai/QuizPanel";
 
 export default function DashboardMain() {
   const dashboard = useDashboardData();
-
+  const SESSION_KEY = "dashboard_session";
+  function saveSession(data: {
+    topicId?: string | null;
+    innerTopicId?: string | null;
+    codeBlockId?: string | null;
+  }) {
+    try {
+      const existing = JSON.parse(localStorage.getItem(SESSION_KEY) || "{}");
+      localStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify({ ...existing, ...data, savedAt: Date.now() })
+      );
+    } catch {}
+  }
+  
+  function loadSession() {
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      // Expire after 7 days of inactivity
+      const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+      if (Date.now() - parsed.savedAt > SEVEN_DAYS) {
+        localStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+      return parsed as { topicId?: string; innerTopicId?: string; codeBlockId?: string };
+    } catch {
+      return null;
+    }
+  }
   return (
     <AuthGuard>
       {dashboard.loading ? (
-        <main className="flex min-h-screen text-2xl items-center justify-center bg-gray-100">
+        <main className="flex min-h-screen text-xl items-center justify-center bg-gray-100">
           Yuklanmoqda...
         </main>
       ) : (
@@ -150,13 +180,15 @@ export default function DashboardMain() {
           </div>
 
           {dashboard.selectedCodeBlock && (
-              <CodeViewer
-                codeBlock={dashboard.selectedCodeBlock}
-                onExplain={dashboard.handleExplainCode}
-                onDelete={dashboard.handleDeleteCodeBlock}
-                onEdit={() => dashboard.setShowEditCodeBlockModal(true)}
-                explaining={dashboard.explaining}
-              />
+             <CodeViewer
+              codeBlock={dashboard.selectedCodeBlock}
+              codeBlocks={dashboard.codeBlocks}
+              onSelectCodeBlock={dashboard.setSelectedCodeBlock}
+              onExplain={dashboard.handleExplainCode}
+              onDelete={dashboard.handleDeleteCodeBlock}
+              onEdit={() => dashboard.setShowEditCodeBlockModal(true)}
+              explaining={dashboard.explaining}
+            />
             )}
 
 

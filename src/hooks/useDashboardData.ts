@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   addCodeBlock,
@@ -10,7 +10,7 @@ import {
   deleteInnerTopic,
   deleteTopic,
   explainCodeBlock,
-  generateQuestions,       // <-- ADD THIS IMPORT
+  generateQuestions,
   getCodeBlocks,
   getCodeExplanations,
   getInnerTopics,
@@ -29,7 +29,47 @@ import type {
   Topic,
 } from "@/src/types/types";
 
-import type { QuizQuestion } from "@/src/components/ai/QuizPanel"; // <-- ADD THIS
+import type { QuizQuestion } from "@/src/components/ai/QuizPanel";
+
+// ─── Session persistence ────────────────────────────────────────────────────
+
+const SESSION_KEY = "dashboard_session";
+
+function saveSession(data: {
+  topicId?: string | null;
+  innerTopicId?: string | null;
+  codeBlockId?: string | null;
+}) {
+  try {
+    const existing = JSON.parse(localStorage.getItem(SESSION_KEY) || "{}");
+    localStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({ ...existing, ...data, savedAt: Date.now() })
+    );
+  } catch {}
+}
+
+function loadSession(): {
+  topicId?: string;
+  innerTopicId?: string;
+  codeBlockId?: string;
+} | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+    if (Date.now() - parsed.savedAt > SEVEN_DAYS) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+// ─── Hook ───────────────────────────────────────────────────────────────────
 
 export function useDashboardData() {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -38,15 +78,12 @@ export function useDashboardData() {
   const [explanations, setExplanations] = useState<CodeExplanation[]>([]);
   const [aiError, setAiError] = useState<string | null>(null);
 
-  // --- NEW: quiz state ---
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
   const [generatingQuiz, setGeneratingQuiz] = useState(false);
 
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-  const [selectedInnerTopic, setSelectedInnerTopic] =
-    useState<InnerTopic | null>(null);
-  const [selectedCodeBlock, setSelectedCodeBlock] =
-    useState<CodeBlock | null>(null);
+  const [selectedInnerTopic, setSelectedInnerTopic] = useState<InnerTopic | null>(null);
+  const [selectedCodeBlock, setSelectedCodeBlock] = useState<CodeBlock | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [explaining, setExplaining] = useState(false);
@@ -55,25 +92,40 @@ export function useDashboardData() {
   const [showAddInnerTopicModal, setShowAddInnerTopicModal] = useState(false);
   const [showAddCodeBlockModal, setShowAddCodeBlockModal] = useState(false);
   const [showEditCodeBlockModal, setShowEditCodeBlockModal] = useState(false);
+  const [showEditTopicModal, setShowEditTopicModal] = useState(false);
+  const [showEditInnerTopicModal, setShowEditInnerTopicModal] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Tracks whether we're still in the initial restore cascade
+  // so we don't overwrite the saved session with nulls mid-load
+  const isRestoringRef = useRef(true);
 
   const filteredTopics = topics.filter((topic) =>
     topic.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const [showEditTopicModal, setShowEditTopicModal] = useState(false);
-  const [showEditInnerTopicModal, setShowEditInnerTopicModal] = useState(false);
+  // ─── Load topics (once on mount) ──────────────────────────────────────────
 
   useEffect(() => {
     async function loadTopics() {
+      const session = loadSession(); // read ONCE and pass down
       const result = await getTopics();
       setTopics(result.data);
-      if (result.data.length > 0) setSelectedTopic(result.data[0]);
+
+      const saved = result.data.find((t: Topic) => t.id === session?.topicId);
+      const topic = saved ?? result.data[0] ?? null;
+
+      // If there's nothing to restore for inner/code, mark restore done now
+      if (!session?.innerTopicId) isRestoringRef.current = false;
+
+      setSelectedTopic(topic);
       setLoading(false);
     }
     loadTopics();
   }, []);
+
+  // ─── Load inner topics ────────────────────────────────────────────────────
 
   useEffect(() => {
     async function loadInnerTopics() {
@@ -83,15 +135,28 @@ export function useDashboardData() {
       setCodeBlocks([]);
       setSelectedCodeBlock(null);
       setExplanations([]);
-      setQuizQuestions([]); // <-- reset quiz on topic change
-      if (result.data.length > 0) {
-        setSelectedInnerTopic(result.data[0]);
+      setQuizQuestions([]);
+
+      if (isRestoringRef.current) {
+        // During restore: try to find the saved inner topic
+        const session = loadSession();
+        const saved = result.data.find(
+          (t: InnerTopic) => t.id === session?.innerTopicId
+        );
+
+        // If no saved code block to restore after this, mark done
+        if (!session?.codeBlockId) isRestoringRef.current = false;
+
+        setSelectedInnerTopic(saved ?? result.data[0] ?? null);
       } else {
-        setSelectedInnerTopic(null);
+        // Normal navigation: just pick first
+        setSelectedInnerTopic(result.data[0] ?? null);
       }
     }
     loadInnerTopics();
   }, [selectedTopic]);
+
+  // ─── Load code blocks ─────────────────────────────────────────────────────
 
   useEffect(() => {
     async function loadCodeBlocks() {
@@ -99,27 +164,37 @@ export function useDashboardData() {
       const result = await getCodeBlocks(selectedInnerTopic.id);
       setCodeBlocks(result.data);
       setExplanations([]);
-      setQuizQuestions([]); // <-- reset quiz on inner topic change
-      if (result.data.length > 0) {
-        setSelectedCodeBlock(result.data[0]);
+      setQuizQuestions([]);
+
+      if (isRestoringRef.current) {
+        // During restore: try to find the saved code block
+        const session = loadSession();
+        const saved = result.data.find(
+          (b: CodeBlock) => b.id === session?.codeBlockId
+        );
+        setSelectedCodeBlock(saved ?? result.data[0] ?? null);
+        // Restore complete
+        isRestoringRef.current = false;
       } else {
-        setSelectedCodeBlock(null);
+        setSelectedCodeBlock(result.data[0] ?? null);
       }
     }
     loadCodeBlocks();
   }, [selectedInnerTopic]);
 
+  // ─── Load explanations ────────────────────────────────────────────────────
+
   useEffect(() => {
     async function loadExplanations() {
       if (!selectedCodeBlock) {
         setExplanations([]);
-        setQuizQuestions([]); // <-- reset quiz when code block changes
+        setQuizQuestions([]);
         return;
       }
       try {
         const result = await getCodeExplanations(selectedCodeBlock.id);
         setExplanations(result.data);
-        setQuizQuestions([]); // reset quiz for new code block
+        setQuizQuestions([]);
       } catch {
         setExplanations([]);
       }
@@ -127,7 +202,25 @@ export function useDashboardData() {
     loadExplanations();
   }, [selectedCodeBlock]);
 
-  // --- NEW: generate quiz handler ---
+  // ─── Persist selections (only after restore is done) ─────────────────────
+
+  useEffect(() => {
+    if (isRestoringRef.current) return;
+    if (selectedTopic) saveSession({ topicId: selectedTopic.id });
+  }, [selectedTopic]);
+
+  useEffect(() => {
+    if (isRestoringRef.current) return;
+    saveSession({ innerTopicId: selectedInnerTopic?.id ?? null });
+  }, [selectedInnerTopic]);
+
+  useEffect(() => {
+    if (isRestoringRef.current) return;
+    saveSession({ codeBlockId: selectedCodeBlock?.id ?? null });
+  }, [selectedCodeBlock]);
+
+  // ─── Handlers ─────────────────────────────────────────────────────────────
+
   async function handleGenerateQuiz() {
     if (!selectedCodeBlock) return;
     try {
@@ -159,7 +252,10 @@ export function useDashboardData() {
 
   async function handleAddInnerTopic(data: { title: string }) {
     if (!selectedTopic) return;
-    const created = await addInnerTopic({ topicId: selectedTopic.id, title: data.title });
+    const created = await addInnerTopic({
+      topicId: selectedTopic.id,
+      title: data.title,
+    });
     const result = await getInnerTopics(selectedTopic.id);
     setInnerTopics(result.data);
     setSelectedInnerTopic(created.data);
@@ -227,7 +323,7 @@ export function useDashboardData() {
       setAiError(
         isRateLimit
           ? "Bugungi AI so'rovlar limiti tugadi. Iltimos ertaga qayta urinib ko'ring. 🕐"
-          : null // silent for other errors — they're usually network/server issues
+          : null
       );
     } finally {
       setExplaining(false);
@@ -250,10 +346,7 @@ export function useDashboardData() {
     }
   }
 
-  async function handleUpdateCodeBlock(data: {
-    title: string;
-    code: string;
-  }) {
+  async function handleUpdateCodeBlock(data: { title: string; code: string }) {
     if (!selectedCodeBlock || !selectedInnerTopic) return;
     const updated = await updateCodeBlock(selectedCodeBlock.id, data);
     const result = await getCodeBlocks(selectedInnerTopic.id);
@@ -283,7 +376,10 @@ export function useDashboardData() {
     }
   }
 
-  async function handleUpdateTopic(data: { title: string; description?: string }) {
+  async function handleUpdateTopic(data: {
+    title: string;
+    description?: string;
+  }) {
     if (!selectedTopic) return;
     const updated = await updateTopic(selectedTopic.id, data);
     const result = await getTopics();
@@ -291,7 +387,9 @@ export function useDashboardData() {
     setSelectedTopic(updated.data);
   }
 
-  async function handleUpdateInnerTopic(data: { title: string }): Promise<void> {
+  async function handleUpdateInnerTopic(data: {
+    title: string;
+  }): Promise<void> {
     if (!selectedInnerTopic || !selectedTopic) return;
     await updateInnerTopic(selectedInnerTopic.id, data);
     const result = await getInnerTopics(selectedTopic.id);
@@ -303,20 +401,22 @@ export function useDashboardData() {
   }
 
   async function handleReorderInnerTopics(orderedIds: string[]) {
-        setInnerTopics((prev) => {
-          const map = new Map(prev.map((t) => [t.id, t]));
-          return orderedIds.map((id) => map.get(id)!).filter(Boolean);
-        });
-        await reorderInnerTopics(orderedIds);
-      }
-    
-      async function handleReorderCodeBlocks(orderedIds: string[]) {
-        setCodeBlocks((prev) => {
-          const map = new Map(prev.map((b) => [b.id, b]));
-          return orderedIds.map((id) => map.get(id)!).filter(Boolean);
-        });
-        await reorderCodeBlocks(orderedIds);
-      }
+    setInnerTopics((prev) => {
+      const map = new Map(prev.map((t) => [t.id, t]));
+      return orderedIds.map((id) => map.get(id)!).filter(Boolean);
+    });
+    await reorderInnerTopics(orderedIds);
+  }
+
+  async function handleReorderCodeBlocks(orderedIds: string[]) {
+    setCodeBlocks((prev) => {
+      const map = new Map(prev.map((b) => [b.id, b]));
+      return orderedIds.map((id) => map.get(id)!).filter(Boolean);
+    });
+    await reorderCodeBlocks(orderedIds);
+  }
+
+  // ─── Return ───────────────────────────────────────────────────────────────
 
   return {
     topics,
@@ -325,7 +425,6 @@ export function useDashboardData() {
     codeBlocks,
     explanations,
 
-    // --- NEW ---
     quizQuestions,
     generatingQuiz,
     handleGenerateQuiz,
@@ -352,23 +451,25 @@ export function useDashboardData() {
     setShowAddCodeBlockModal,
     showEditCodeBlockModal,
     setShowEditCodeBlockModal,
-    handleUpdateTopic,
-    handleAddTopic,
-    handleDeleteTopic,
-    handleAddInnerTopic,
-    handleAddCodeBlock,
-    handleExplainCode,
-    handleDeleteCodeBlock,
-    handleUpdateCodeBlock,
-    handleDeleteInnerTopic,
     showEditTopicModal,
     setShowEditTopicModal,
-    handleUpdateInnerTopic,
-    handleReorderInnerTopics,
-    handleReorderCodeBlocks,
     showEditInnerTopicModal,
     setShowEditInnerTopicModal,
+
+    handleAddTopic,
+    handleUpdateTopic,
+    handleDeleteTopic,
+    handleAddInnerTopic,
+    handleUpdateInnerTopic,
+    handleDeleteInnerTopic,
+    handleReorderInnerTopics,
+    handleAddCodeBlock,
+    handleUpdateCodeBlock,
+    handleDeleteCodeBlock,
+    handleReorderCodeBlocks,
+    handleExplainCode,
+
     aiError,
-    setAiError
+    setAiError,
   };
 }

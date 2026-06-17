@@ -34,13 +34,13 @@ if (TopicList.length === 0) {
           <button
             key={topic.id}
             onClick={() => onSelectTopic(topic)}
-            className={`w-full rounded-xl border px-4 py-3 text-left transition ${
+            className={`w-[80%]   py-3 text-left transition ${
               isActive
-                ? "border-indigo-700 bg-blue-50 text-indigo-800"
-                : "border-gray-200 bg-white hover:bg-gray-50"
+                ? "border-t-0 border-l-0 border-r-0 border border-b-slate-300 text-slate-100"
+                : "text-slate-400"
             }`}
           >
-            <p className="font-semibold">{topic.title}</p>
+            <p className="font-mediu">{topic.title}</p>
             {topic.description && (
               <p className="mt-1 line-clamp-1 text-sm text-gray-500">
                 {topic.description}
