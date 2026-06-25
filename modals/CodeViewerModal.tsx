@@ -47,7 +47,7 @@ function CodeWithComments({
   darkMode: boolean;
   fontSize: number;
 }) {
-  const commentColor = darkMode ? "#858d97" : "#57606a"; // VS Code dark green / GitHub gray
+  const commentColor = darkMode ? "#9098a2" : "#57606a"; // VS Code dark green / GitHub gray
 
   const lines = code.split("\n");
 
