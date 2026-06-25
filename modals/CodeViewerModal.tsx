@@ -84,6 +84,7 @@ function CodeWithComments({
                 ...commonStyle,
                 color: commentColor,
                 // fontStyle: "italic",
+                fontWeight: 300,
               }}
             >
               {seg.text}
