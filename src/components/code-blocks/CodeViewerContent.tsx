@@ -18,11 +18,27 @@ export default function CodeViewerContent({
   const inlineCodeRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (isCode && inlineCodeRef.current) {
-      Prism.plugins.autoloader.loadLanguages(language, () => {
-        if (inlineCodeRef.current) Prism.highlightElement(inlineCodeRef.current);
-      });
+    if (!isCode || !inlineCodeRef.current) return;
+
+    const el = inlineCodeRef.current;
+
+    // If the grammar is already registered (e.g. a second render), highlight immediately
+    if (Prism.languages[language]) {
+      Prism.highlightElement(el);
+      return;
     }
+
+    // Otherwise wait for the autoloader to fetch and register the grammar first
+    Prism.plugins.autoloader.loadLanguages(
+      [language],
+      () => {
+        if (el) Prism.highlightElement(el);
+      },
+      () => {
+        // Language failed to load — highlight anyway so at least plain text shows
+        if (el) Prism.highlightElement(el);
+      }
+    );
   }, [codeBlock.code, language, isCode]);
 
   const langClass = isCode ? `language-${language}` : "language-none";

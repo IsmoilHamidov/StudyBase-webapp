@@ -24,19 +24,127 @@ const DEFAULT_FONT_INDEX = 4;
 
 function getBlockIcon(contentType: string | null | undefined) {
   if (!contentType) return FileText;
-  
   switch (contentType) {
-    case "code":
-      return Code2;
-    case "math":
-      return Sigma;
-    case "english":
-      return Languages;
-    case "theory":
-      return BookOpen;
-    default:
-      return FileText;
+    case "code":    return Code2;
+    case "math":    return Sigma;
+    case "english": return Languages;
+    case "theory":  return BookOpen;
+    default:        return FileText;
   }
+}
+
+// ✅ Split code into segments: comment lines are rendered as styled spans,
+// non-comment lines are batched and highlighted by Prism normally.
+// This prevents Prism from misreading apostrophes in Uzbek comment text as string delimiters.
+function CodeWithComments({
+  code,
+  language,
+  darkMode,
+  fontSize,
+}: {
+  code: string;
+  language: string;
+  darkMode: boolean;
+  fontSize: number;
+}) {
+  const commentColor = darkMode ? "#858d97" : "#57606a"; // VS Code dark green / GitHub gray
+
+  const lines = code.split("\n");
+
+  // Group consecutive non-comment lines so Prism highlights them as a block
+  const segments: { type: "comment" | "code"; text: string }[] = [];
+  for (const line of lines) {
+    const trimmed = line.trimStart();
+    const isComment = trimmed.startsWith("#");
+    const last = segments[segments.length - 1];
+    if (last && last.type === (isComment ? "comment" : "code")) {
+      last.text += "\n" + line;
+    } else {
+      segments.push({ type: isComment ? "comment" : "code", text: line });
+    }
+  }
+
+  const commonStyle: React.CSSProperties = {
+    fontSize,
+    lineHeight: 1.7,
+    fontWeight: 400,
+    fontFamily: '"JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, "Courier New", monospace',
+    display: "block",
+    whiteSpace: "pre",
+  };
+
+  return (
+    <>
+      {segments.map((seg, i) => {
+        if (seg.type === "comment") {
+          return (
+            <span
+              key={i}
+              style={{
+                ...commonStyle,
+                color: commentColor,
+                // fontStyle: "italic",
+              }}
+            >
+              {seg.text}
+            </span>
+          );
+        }
+        return (
+          <PrismSegment
+            key={i}
+            code={seg.text}
+            language={language}
+            style={commonStyle}
+            darkMode={darkMode}
+          />
+        );
+      })}
+    </>
+  );
+}
+
+function PrismSegment({
+  code,
+  language,
+  style,
+  darkMode,
+}: {
+  code: string;
+  language: string;
+  style: React.CSSProperties;
+  darkMode: boolean;
+}) {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const el = ref.current;
+
+    if (Prism.languages[language]) {
+      Prism.highlightElement(el);
+      return;
+    }
+
+    Prism.plugins.autoloader.loadLanguages(
+      [language],
+      () => { if (el) Prism.highlightElement(el); },
+      () => { if (el) Prism.highlightElement(el); }
+    );
+  }, [code, language, darkMode]);
+
+  return (
+    <code
+      ref={ref}
+      className={`language-${language}`}
+      style={{
+        ...style,
+        ...(darkMode ? {} : { color: "#24292e", background: "transparent" }),
+      }}
+    >
+      {code}
+    </code>
+  );
 }
 
 interface CodeViewerModalProps {
@@ -49,19 +157,19 @@ interface CodeViewerModalProps {
   onDelete: () => void;
 }
 
-function BlockSidebar({ 
-  blocks, 
-  activeBlockId, 
-  theme, 
-  onSelect 
-}: { 
+function BlockSidebar({
+  blocks,
+  activeBlockId,
+  theme,
+  onSelect,
+}: {
   blocks: CodeBlock[];
   activeBlockId: string;
   theme: "dark" | "light";
   onSelect: (block: CodeBlock) => void;
 }) {
   const dark = theme === "dark";
-  
+
   return (
     <aside
       className={`hidden sm:flex w-48 lg:w-52 flex-shrink-0 flex-col scrollbar-thin overflow-y-auto scrollbar-thumb-black/20 ${
@@ -119,58 +227,37 @@ export default function CodeViewerModal({
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(true);
   const [fontIndex, setFontIndex] = useState(DEFAULT_FONT_INDEX);
-  const modalCodeRef = useRef<HTMLElement>(null);
   const hasPushedState = useRef(false);
 
   const isCode = codeBlock.content_type === "code";
   const language = codeBlock?.language?.toLowerCase() || "python";
-  const langClass = isCode ? `language-${language}` : "language-none";
 
-  // Handle browser back button to close modal instead of navigating
+  // Handle browser back button
   useEffect(() => {
     if (isOpen) {
-      // Push a new state to the history stack
       if (!hasPushedState.current) {
         window.history.pushState({ modalOpen: true }, "");
         hasPushedState.current = true;
       }
-
-      // Handle popstate event (back button)
       const handlePopState = (event: PopStateEvent) => {
-        // Check if this is our modal state
         if (event.state?.modalOpen === true || hasPushedState.current) {
           onClose();
-          // Prevent navigation by keeping the current state
           window.history.pushState({ modalOpen: true }, "");
           return;
         }
-        // If it's not our state, allow normal navigation
         hasPushedState.current = false;
       };
-
       window.addEventListener("popstate", handlePopState);
-
-      return () => {
-        window.removeEventListener("popstate", handlePopState);
-      };
+      return () => window.removeEventListener("popstate", handlePopState);
     } else {
-      // Clean up history state when modal closes
       if (hasPushedState.current) {
-        // Replace the state to clean up
         window.history.replaceState(null, "");
         hasPushedState.current = false;
       }
     }
   }, [isOpen, onClose]);
 
-  // Highlight modal code whenever modal opens or settings change
-  useEffect(() => {
-    if (isOpen && modalCodeRef.current) {
-      Prism.highlightElement(modalCodeRef.current);
-    }
-  }, [isOpen, codeBlock.code, language, darkMode]);
-
-  // Lock body scroll while modal is open
+  // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -179,7 +266,6 @@ export default function CodeViewerModal({
   const zoomIn = () => setFontIndex((i) => Math.min(i + 1, FONT_SIZES.length - 1));
   const zoomOut = () => setFontIndex((i) => Math.max(i - 1, 0));
 
-  // Handle close with history cleanup
   const handleClose = () => {
     if (hasPushedState.current) {
       window.history.replaceState(null, "");
@@ -195,9 +281,7 @@ export default function CodeViewerModal({
       className="fixed inset-0 z-50 flex flex-col"
       data-theme={darkMode ? "dark" : "light"}
       style={{ background: "rgba(20,20,20,0.92)" }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) handleClose();
-      }}
+      onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
     >
       {/* Toolbar */}
       <div
@@ -228,11 +312,7 @@ export default function CodeViewerModal({
             <ZoomOut size={18} />
           </button>
 
-          <span
-            className={`w-10 text-center text-sm font-mono ${
-              darkMode ? "text-gray-400" : "text-gray-500"
-            }`}
-          >
+          <span className={`w-10 text-center text-sm font-mono ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
             {FONT_SIZES[fontIndex]}px
           </span>
 
@@ -260,10 +340,7 @@ export default function CodeViewerModal({
           <div className={`mx-1 h-5 w-px ${darkMode ? "bg-white/15" : "bg-gray-300"}`} />
 
           <button
-            onClick={() => {
-              handleClose();
-              onEdit();
-            }}
+            onClick={() => { handleClose(); onEdit(); }}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
               darkMode
                 ? "border border-indigo-500/40 bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600/30"
@@ -275,10 +352,7 @@ export default function CodeViewerModal({
           </button>
 
           <button
-            onClick={() => {
-              handleClose();
-              onDelete();
-            }}
+            onClick={() => { handleClose(); onDelete(); }}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
               darkMode
                 ? "border border-red-500/40 bg-red-600/20 text-red-300 hover:bg-red-600/30"
@@ -313,25 +387,31 @@ export default function CodeViewerModal({
 
         <div className="flex-1 min-w-0 overflow-auto">
           <pre
-            className={`min-h-full px-5 py-11 lg:px-5  !rounded-none lg:pl-9 lg:py-7 ${
+            className={`min-h-full px-5 py-11 lg:px-5 !rounded-none lg:pl-9 lg:py-7 ${
               darkMode ? "!bg-[#2b2b2b]" : "!bg-white"
             }`}
             style={{ margin: 0 }}
           >
-            <code
-              ref={modalCodeRef}
-              className={langClass}
-              style={{
-                fontSize: FONT_SIZES[fontIndex],
-                lineHeight: 1.7,
-                fontWeight: 400,
-                fontFamily:
-                  '"JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, "Courier New", monospace',
-                ...(darkMode ? {} : { color: "#24292e", background: "transparent" }),
-              }}
-            >
-              {codeBlock.code}
-            </code>
+            {isCode ? (
+              <CodeWithComments
+                code={codeBlock.code}
+                language={language}
+                darkMode={darkMode}
+                fontSize={FONT_SIZES[fontIndex]}
+              />
+            ) : (
+              <code
+                style={{
+                  fontSize: FONT_SIZES[fontIndex],
+                  lineHeight: 1.7,
+                  fontWeight: 400,
+                  fontFamily: '"JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, "Courier New", monospace',
+                  color: darkMode ? "#d4d4d4" : "#24292e",
+                }}
+              >
+                {codeBlock.code}
+              </code>
+            )}
           </pre>
         </div>
       </div>
